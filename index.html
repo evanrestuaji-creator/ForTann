@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Partner ❤️</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- AUDIO -->
+<audio id="loadingMusic" src="audio/lagu_10_detik.mp3"></audio>
+<audio id="mainMusic" src="audio/video1.mp3"></audio>
+
+<!-- PLAY PAUSE -->
+<button id="musicBtn" class="music-btn">
+    🎵
+</button>
+
+<!-- ========================= -->
+<!-- PAGE 1 START -->
+<!-- ========================= -->
+
+<section id="page-start" class="page active">
+
+<div class="start-container">
+
+<h1 class="start-title">
+WELCOME
+</h1>
+
+<p class="note">
+Silahkan klik pojok kanan atas untuk menyalakan lagu pada web
+</p>
+
+<button id="startBtn" class="start-btn">
+START
+</button>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 2 LOADING -->
+<!-- ========================= -->
+
+<section id="page-loading" class="page">
+
+<div class="loading-wrapper">
+
+<div class="rainbow-loader">
+<div class="loader-inner"></div>
+</div>
+
+<div id="loadingPercent">
+0%
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 3 WELCOME -->
+<!-- ========================= -->
+
+<section id="page-welcome" class="page">
+
+<div class="welcome-container">
+
+<h2>
+WELCOME
+</h2>
+
+<h1>
+HII!!
+</h1>
+
+<div class="wave-hand">
+👋
+</div>
+
+<p>
+Silahkan Klik Enter Untuk Membuka Halaman Selanjutnya
+</p>
+
+<button id="enterBtn">
+ENTER
+</button>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 4 PASSWORD GAME -->
+<!-- ========================= -->
+
+<section id="page-password" class="page">
+
+<div class="game-container">
+
+<h1>
+MINIGAMES
+</h1>
+
+<h2>
+SECRET GAME
+</h2>
+
+<p>
+Silahkan ketikan password sesuai kotak warna merah
+</p>
+
+<div class="password-clue">
+
+<div class="target-box">F</div>
+<div class="target-box">O</div>
+<div class="target-box">R</div>
+<div class="target-box">T</div>
+<div class="target-box">A</div>
+<div class="target-box">N</div>
+
+</div>
+
+<div id="randomLetters" class="random-grid">
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 5 DICE GAME -->
+<!-- ========================= -->
+
+<section id="page-dice" class="page">
+
+<div class="dice-wrapper">
+
+<h1>
+MINIGAMES
+</h1>
+
+<h2>
+LEMPAR DADU
+</h2>
+
+<div class="dice-container">
+
+<div class="dice" id="dice1">
+1
+</div>
+
+<div class="dice" id="dice2">
+1
+</div>
+
+</div>
+
+<button id="holdDiceBtn">
+TEKAN & TAHAN
+</button>
+
+<div id="luckText">
+BERUNTUNG!
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 6 FLOWER LOADING -->
+<!-- ========================= -->
+
+<section id="page-flower" class="page">
+
+<div class="flower-loading">
+
+<div id="bookDrop" class="book-drop">
+📖
+</div>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 7 BOOK COVER -->
+<!-- ========================= -->
+
+<section id="page-cover" class="page">
+
+<div class="book-cover">
+
+<h1>
+A This book is for my partner.
+</h1>
+
+<button id="openBookBtn">
+Buka Halaman Buku
+</button>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 8 GALLERY -->
+<!-- ========================= -->
+
+<section id="page-gallery" class="page">
+
+<div class="book-background">
+
+<div class="video-top">
+
+<video
+id="topVideo"
+src="videos/video1.mp4"
+autoplay
+muted
+playsinline
+loop>
+</video>
+
+</div>
+
+<div class="photo-row">
+
+<img id="img1" src="images/foto1.jpg">
+<img id="img2" src="images/foto2.jpg">
+<img id="img3" src="images/foto3.jpg">
+<img id="img4" src="images/foto4.jpg">
+<img id="img5" src="images/foto5.jpg">
+
+</div>
+
+<div class="photo-row">
+
+<img id="img6" src="images/foto6.jpg">
+<img id="img7" src="images/foto7.jpg">
+<img id="img8" src="images/foto8.jpg">
+<img id="img9" src="images/foto9.jpg">
+<img id="img10" src="images/foto10.jpg">
+
+</div>
+
+<button id="nextVideoPage">
+LANJUT
+</button>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 9 VIDEO MEMORIES -->
+<!-- ========================= -->
+
+<section id="page-videos" class="page">
+
+<div class="book-background">
+
+<div class="video-grid">
+
+<video controls src="videos/video1.mp4"></video>
+<video controls src="videos/video2.mp4"></video>
+<video controls src="videos/video3.mp4"></video>
+<video controls src="videos/video4.mp4"></video>
+
+</div>
+
+<button id="toEnding">
+LANJUT
+</button>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- PAGE 10 ENDING -->
+<!-- ========================= -->
+
+<section id="page-ending" class="page">
+
+<div id="endingText" class="ending-scroll">
+
+<!-- TEKS PANJANG NANTI DISINI -->
+
+</div>
+
+<button id="restartBtn">
+MULAI KEMBALI
+</button>
+
+</section>
+
+<script src="script.js"></script>
+
+</body>
+</html>

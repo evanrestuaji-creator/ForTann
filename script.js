@@ -1,39 +1,26 @@
 /* =========================================================
    FOR MY PARTNER
-   SCRIPT.JS
+   SCRIPT.JS FINAL
 ========================================================= */
 
 
 /* =========================================================
-   PAGE SYSTEM
+   HELPER
 ========================================================= */
 
-const pages = {
-    loading: document.getElementById("page-loading"),
-    welcome: document.getElementById("page-welcome"),
-    password: document.getElementById("page-password"),
-    dice: document.getElementById("page-dice"),
-    flower: document.getElementById("page-flower"),
-    cover: document.getElementById("page-cover"),
-    gallery: document.getElementById("page-gallery"),
-    videos: document.getElementById("page-videos"),
-    ending: document.getElementById("page-ending")
-};
+const $ = (id) => document.getElementById(id);
 
-function showPage(page) {
+function showPage(id) {
 
-    Object.values(pages).forEach(p => {
-        if (p) p.classList.remove("active");
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
     });
 
-    if (pages[page]) {
-        pages[page].classList.add("active");
+    const page = $(id);
+
+    if (page) {
+        page.classList.add("active");
     }
-
-    window.scrollTo({
-        top: 0,
-        behavior: "instant"
-    });
 }
 
 
@@ -41,63 +28,34 @@ function showPage(page) {
    AUDIO
 ========================================================= */
 
-const loadingMusic =
-    document.getElementById("loadingMusic");
-
-const mainMusic =
-    document.getElementById("mainMusic");
-
-const musicBtn =
-    document.getElementById("musicBtn");
+const loadingMusic = $("loadingMusic");
+const mainMusic = $("mainMusic");
+const musicBtn = $("musicBtn");
 
 let musicPlaying = false;
-
-function playMusic(audio) {
-
-    if (!audio) return;
-
-    audio.loop = true;
-
-    audio.play()
-        .then(() => {
-            musicPlaying = true;
-            updateMusicButton();
-        })
-        .catch(() => {});
-}
-
-function pauseMusic(audio) {
-
-    if (!audio) return;
-
-    audio.pause();
-
-    musicPlaying = false;
-
-    updateMusicButton();
-}
-
-function updateMusicButton() {
-
-    if (!musicBtn) return;
-
-    musicBtn.textContent =
-        musicPlaying ? "🔊" : "🎵";
-}
 
 if (musicBtn) {
 
     musicBtn.addEventListener("click", () => {
 
-        const currentAudio =
-            !mainMusic.paused
-                ? mainMusic
-                : loadingMusic;
+        if (!mainMusic) return;
 
-        if (currentAudio.paused) {
-            playMusic(currentAudio);
+        if (mainMusic.paused) {
+
+            mainMusic.play()
+                .then(() => {
+                    musicPlaying = true;
+                    musicBtn.textContent = "🔊";
+                })
+                .catch(() => {});
+
         } else {
-            pauseMusic(currentAudio);
+
+            mainMusic.pause();
+
+            musicPlaying = false;
+
+            musicBtn.textContent = "🎵";
         }
 
     });
@@ -106,78 +64,73 @@ if (musicBtn) {
 
 
 /* =========================================================
-   START
+   PAGE LOADING
 ========================================================= */
 
-/*
-   Karena halaman pertama sudah dihapus,
-   kita langsung mulai dari loading.
-*/
+let loadingProgress = 0;
 
-window.addEventListener("load", () => {
+const loadingInterval = setInterval(() => {
 
-    startFlowerLoading();
+    loadingProgress += Math.random() * 3 + 1;
 
-});
+    if (loadingProgress >= 100) {
+
+        loadingProgress = 100;
+
+        clearInterval(loadingInterval);
+
+        if ($("loadingPercent")) {
+            $("loadingPercent").textContent = "100%";
+        }
+
+        setTimeout(() => {
+
+            showPage("page-welcome");
+
+        }, 700);
+
+    } else {
+
+        if ($("loadingPercent")) {
+            $("loadingPercent").textContent =
+                Math.floor(loadingProgress) + "%";
+        }
+
+    }
+
+}, 60);
 
 
 /* =========================================================
-   LOADING
+   START LOADING MUSIC
 ========================================================= */
 
-function startFlowerLoading() {
+if (loadingMusic) {
 
-    showPage("loading");
+    loadingMusic.volume = 0.7;
 
-    let percent = 0;
-
-    const percentElement =
-        document.getElementById("loadingPercent");
-
-    const timer =
-        setInterval(() => {
-
-            percent += Math.floor(
-                Math.random() * 4
-            ) + 1;
-
-            if (percent >= 100) {
-
-                percent = 100;
-
-                clearInterval(timer);
-
-                setTimeout(() => {
-
-                    showPage("welcome");
-
-                    playMusic(mainMusic);
-
-                }, 600);
-            }
-
-            if (percentElement) {
-                percentElement.textContent =
-                    percent + "%";
-            }
-
-        }, 55);
+    loadingMusic.play()
+        .catch(() => {});
 
 }
 
 
 /* =========================================================
-   WELCOME
+   WELCOME → PASSWORD
 ========================================================= */
 
-const enterBtn =
-    document.getElementById("enterBtn");
+const enterBtn = $("enterBtn");
 
 if (enterBtn) {
 
     enterBtn.addEventListener("click", () => {
 
-        showPage("password");
+        if (loadingMusic) {
+            loadingMusic.pause();
+            loadingMusic.currentTime = 0;
+        }
+
+        showPage("page-password");
 
         startMemoryGame();
 
@@ -190,55 +143,38 @@ if (enterBtn) {
    MEMORY PASSWORD GAME
 ========================================================= */
 
+const letters = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L"
+];
+
+let memorySequence = [];
+let playerSequence = [];
+
+let memoryMistakes = 0;
+
+let memoryLocked = true;
+
+let memoryStarted = false;
+
+
 /*
-   Password:
-   F O R T A N
-
-   Huruf akan muncul acak.
-   Semua huruf target akan berkedip
-   bersamaan sekitar 2 detik.
-
-   Setelah itu pemain harus mengingat
-   urutannya dan menekan huruf yang benar.
+    Acak array
 */
 
+function shuffleArray(array) {
 
-const passwordCode =
-    ["F", "O", "R", "T", "A", "N"];
-
-let memoryIndex = 0;
-
-let memoryAttempts = 0;
-
-let memoryBusy = false;
-
-let memoryLetters = [];
-
-
-/* RANDOM ALPHABET */
-
-const alphabet =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-
-function randomLetter() {
-
-    return alphabet[
-        Math.floor(
-            Math.random() *
-            alphabet.length
-        )
-    ];
-
-}
-
-
-/* SHUFFLE */
-
-function shuffle(array) {
-
-    const result =
-        [...array];
+    const result = [...array];
 
     for (
         let i = result.length - 1;
@@ -248,74 +184,43 @@ function shuffle(array) {
 
         const j =
             Math.floor(
-                Math.random() *
-                (i + 1)
+                Math.random() * (i + 1)
             );
 
         [
             result[i],
             result[j]
-        ] = [
+        ] =
+        [
             result[j],
             result[i]
         ];
+
     }
 
     return result;
 }
 
 
-/* CREATE GRID */
+/*
+    Buat huruf
+*/
 
 function createMemoryGrid() {
 
-    const grid =
-        document.getElementById(
-            "randomLetters"
-        );
+    const grid = $("randomLetters");
 
     if (!grid) return;
 
     grid.innerHTML = "";
 
-    /*
-       12 kotak.
-       Password punya 6 huruf.
+    const randomLetters =
+        shuffleArray(letters).slice(0, 8);
 
-       Supaya huruf yang sama tetap
-       bisa diklik dua kali, kita sengaja
-       membuat duplikat huruf target.
-    */
-
-    let letters = [
-        ...passwordCode,
-        ...passwordCode
-    ];
-
-    /*
-       Tambahkan huruf random
-       sampai 16 kotak.
-    */
-
-    while (letters.length < 16) {
-
-        letters.push(
-            randomLetter()
-        );
-
-    }
-
-    letters =
-        shuffle(letters);
-
-    memoryLetters = [];
-
-    letters.forEach(letter => {
+    randomLetters.forEach(letter => {
 
         const button =
             document.createElement("button");
-
-        button.type = "button";
 
         button.className =
             "memory-letter";
@@ -328,115 +233,31 @@ function createMemoryGrid() {
 
         button.addEventListener(
             "click",
-            () => memoryClick(button)
+            () => handleMemoryClick(button)
         );
 
         grid.appendChild(button);
 
-        memoryLetters.push(button);
-
     });
 
 }
 
 
-/* SHOW CLUE */
-
-function showMemoryClue() {
-
-    memoryBusy = true;
-
-    memoryIndex = 0;
-
-    const sequence =
-        [...passwordCode];
-
-    /*
-       Cari SATU tombol untuk masing-masing
-       huruf password.
-
-       Jadi F O R T A N semuanya
-       berkedip BERSAMA.
-    */
-
-    const selectedButtons = [];
-
-    sequence.forEach(letter => {
-
-        const candidates =
-            memoryLetters.filter(
-                button =>
-                    button.dataset.letter ===
-                    letter
-            );
-
-        if (candidates.length > 0) {
-
-            /*
-               Ambil random supaya posisinya
-               tidak selalu sama.
-            */
-
-            const button =
-                candidates[
-                    Math.floor(
-                        Math.random() *
-                        candidates.length
-                    )
-                ];
-
-            selectedButtons.push(button);
-
-        }
-
-    });
-
-
-    selectedButtons.forEach(button => {
-
-        button.classList.add(
-            "memory-clue"
-        );
-
-    });
-
-
-    /*
-       Clue menyala selama 2 detik.
-    */
-
-    setTimeout(() => {
-
-        selectedButtons.forEach(button => {
-
-            button.classList.remove(
-                "memory-clue"
-            );
-
-        });
-
-        memoryBusy = false;
-
-    }, 2000);
-
-}
-
-
-/* START MEMORY */
+/*
+    Mulai game
+*/
 
 function startMemoryGame() {
 
-    memoryIndex = 0;
+    if (memoryStarted) return;
 
-    memoryAttempts = 0;
+    memoryStarted = true;
 
-    memoryBusy = false;
+    memoryMistakes = 0;
+
+    memoryLocked = true;
 
     createMemoryGrid();
-
-    /*
-       Kasih waktu sebentar sebelum clue.
-    */
 
     setTimeout(() => {
 
@@ -447,63 +268,170 @@ function startMemoryGame() {
 }
 
 
-/* PLAYER CLICK */
+/*
+    Tampilkan clue
 
-function memoryClick(button) {
+    Semua huruf yang dipilih
+    menyala BERSAMAAN.
+*/
 
-    if (memoryBusy) return;
+function showMemoryClue() {
 
-    if (button.classList.contains(
-        "memory-selected"
-    )) {
+    const buttons =
+        Array.from(
+            document.querySelectorAll(
+                ".memory-letter"
+            )
+        );
+
+    if (!buttons.length) return;
+
+
+    /*
+        Ambil 1–3 huruf sebagai kode.
+    */
+
+    const shuffled =
+        shuffleArray(buttons);
+
+    const clueCount =
+        Math.min(
+            3,
+            Math.max(
+                1,
+                Math.floor(
+                    buttons.length / 3
+                )
+            )
+        );
+
+
+    memorySequence =
+        shuffled
+            .slice(0, clueCount)
+            .map(
+                button =>
+                    button.dataset.letter
+            );
+
+
+    /*
+        Semua clue menyala bersamaan.
+    */
+
+    shuffled
+        .slice(0, clueCount)
+        .forEach(button => {
+
+            button.classList.add(
+                "memory-clue"
+            );
+
+        });
+
+
+    /*
+        Durasi clue 2 detik.
+    */
+
+    setTimeout(() => {
+
+        buttons.forEach(button => {
+
+            button.classList.remove(
+                "memory-clue"
+            );
+
+        });
+
+        memoryLocked = false;
+
+        playerSequence = [];
+
+    }, 2000);
+
+}
+
+
+/*
+    Klik huruf
+*/
+
+function handleMemoryClick(button) {
+
+    if (memoryLocked) return;
+
+    if (
+        button.classList.contains(
+            "memory-selected"
+        )
+    ) {
         return;
     }
 
-    const clicked =
+
+    const selectedLetter =
         button.dataset.letter;
 
-    const correct =
-        passwordCode[memoryIndex];
+    playerSequence.push(
+        selectedLetter
+    );
+
+    button.classList.add(
+        "memory-selected"
+    );
 
 
-    /* BENAR */
+    const index =
+        playerSequence.length - 1;
 
-    if (clicked === correct) {
 
-        button.classList.add(
+    /*
+        Salah
+    */
+
+    if (
+        selectedLetter !==
+        memorySequence[index]
+    ) {
+
+        memoryMistakes++;
+
+        memoryLocked = true;
+
+        button.classList.remove(
             "memory-selected"
         );
 
-        memoryIndex++;
+        button.classList.add(
+            "memory-error"
+        );
+
 
         /*
-           Semua huruf password sudah benar.
+            Jika salah 3×,
+            kode diacak ulang.
         */
 
-        if (
-            memoryIndex >=
-            passwordCode.length
-        ) {
-
-            memoryBusy = true;
-
-            memoryLetters.forEach(
-                button => {
-
-                    button.classList.add(
-                        "memory-success"
-                    );
-
-                }
-            );
+        if (memoryMistakes >= 3) {
 
             setTimeout(() => {
 
-                showPage("dice");
+                resetMemoryGame();
 
-                startDiceGame();
+            }, 700);
 
-            }, 1000);
+        } else {
+
+            setTimeout(() => {
+
+                button.classList.remove(
+                    "memory-error"
+                );
+
+                resetCurrentMemoryAttempt();
+
+            }, 700);
 
         }
 
@@ -511,72 +439,118 @@ function memoryClick(button) {
     }
 
 
-    /* SALAH */
-
-    button.classList.add(
-        "memory-error"
-    );
-
-    memoryAttempts++;
-
-    setTimeout(() => {
-
-        button.classList.remove(
-            "memory-error"
-        );
-
-    }, 400);
-
-
     /*
-       Maksimal 3 kesalahan.
+        Benar semua
     */
 
-    if (memoryAttempts >= 3) {
+    if (
+        playerSequence.length ===
+        memorySequence.length
+    ) {
 
-        memoryBusy = true;
+        memoryLocked = true;
+
+        document
+            .querySelectorAll(
+                ".memory-letter"
+            )
+            .forEach(button => {
+
+                button.classList.add(
+                    "memory-success"
+                );
+
+            });
+
 
         setTimeout(() => {
 
-            createMemoryGrid();
+            showPage("page-dice");
 
-            memoryAttempts = 0;
+            startDiceGame();
 
-            /*
-               Huruf diacak ulang sehingga
-               posisinya tidak sama.
-            */
-
-            const grid =
-                document.getElementById(
-                    "randomLetters"
-                );
-
-            if (grid) {
-
-                grid.classList.add(
-                    "memory-shuffle"
-                );
-
-                setTimeout(() => {
-
-                    grid.classList.remove(
-                        "memory-shuffle"
-                    );
-
-                }, 500);
-
-            }
-
-            setTimeout(() => {
-
-                showMemoryClue();
-
-            }, 400);
-
-        }, 450);
+        }, 1000);
 
     }
+
+}
+
+
+/*
+    Reset percobaan tanpa
+    mengubah posisi huruf.
+*/
+
+function resetCurrentMemoryAttempt() {
+
+    playerSequence = [];
+
+    document
+        .querySelectorAll(
+            ".memory-letter"
+        )
+        .forEach(button => {
+
+            button.classList.remove(
+                "memory-selected"
+            );
+
+        });
+
+
+    setTimeout(() => {
+
+        memoryLocked = false;
+
+    }, 300);
+
+}
+
+
+/*
+    Salah 3×
+    Huruf dibuat ulang
+    sehingga posisinya berubah.
+*/
+
+function resetMemoryGame() {
+
+    memoryMistakes = 0;
+
+    playerSequence = [];
+
+    memoryLocked = true;
+
+    const grid = $("randomLetters");
+
+    if (grid) {
+
+        grid.classList.add(
+            "memory-shuffle"
+        );
+
+    }
+
+
+    setTimeout(() => {
+
+        if (grid) {
+
+            grid.classList.remove(
+                "memory-shuffle"
+            );
+
+        }
+
+        createMemoryGrid();
+
+        setTimeout(() => {
+
+            showMemoryClue();
+
+        }, 400);
+
+    }, 500);
 
 }
 
@@ -585,51 +559,44 @@ function memoryClick(button) {
    DICE GAME
 ========================================================= */
 
-
-/*
-   Dadu hanya berjalan selama tombol ditekan.
-
-   Semakin lama tombol ditahan:
-   - semakin cepat roll
-   - semakin sering vibrate
-   - semakin banyak animasi
-
-   Setelah dilepas:
-   - dadu berhenti
-   - hasil terakhir disimpan
-
-   Untuk membuka halaman:
-   harus mendapatkan 6 + 6.
-
-   Mekanisme dibuat maksimal 5 kali.
-   Percobaan ke-5 otomatis menghasilkan
-   6 + 6.
-*/
-
+let diceStarted = false;
 
 let diceRolling = false;
 
+let diceHoldStart = 0;
+
 let diceRollTimer = null;
 
-let diceStartTime = 0;
+let diceAnimationFrame = null;
 
 let diceAttempts = 0;
 
-let dice1Value = 1;
-
-let dice2Value = 1;
-
-const holdDiceBtn =
-    document.getElementById(
-        "holdDiceBtn"
-    );
+const MAX_DICE_ATTEMPTS = 5;
 
 
-/* =========================================================
-   DICE PIPS
-========================================================= */
+/*
+    Getaran HP
+*/
 
-function pipPositions(number) {
+function vibrateDevice(duration) {
+
+    if (
+        navigator.vibrate &&
+        typeof navigator.vibrate === "function"
+    ) {
+
+        navigator.vibrate(duration);
+
+    }
+
+}
+
+
+/*
+    Buat titik dadu
+*/
+
+function createPips(number) {
 
     const positions = {
 
@@ -672,64 +639,60 @@ function pipPositions(number) {
 
     };
 
-    return positions[number] || [];
+    return positions[number]
+        .map(position => {
+
+            return `
+                <span
+                    class="pip ${position}">
+                </span>
+            `;
+
+        })
+        .join("");
+
 }
 
 
-/* CREATE FACE */
+/*
+    Criar 6 sisi dadu
+*/
 
-function createDiceFace(number) {
+function createDiceFaces(diceElement) {
 
-    const face =
-        document.createElement("div");
-
-    face.className =
-        "dice-face";
-
-    pipPositions(number)
-        .forEach(position => {
-
-            const pip =
-                document.createElement("span");
-
-            pip.className =
-                "pip " + position;
-
-            face.appendChild(pip);
-
-        });
-
-    return face;
-}
-
-
-/* CREATE 3D DICE */
-
-function buildDice(element, value) {
-
-    if (!element) return;
-
-    element.innerHTML = "";
+    if (!diceElement) return;
 
     const faces = [
-        ["face-front", value],
-        ["face-back", oppositeDice(value)],
-        ["face-right", value],
-        ["face-left", value],
-        ["face-top", value],
-        ["face-bottom", value]
+        "front",
+        "back",
+        "right",
+        "left",
+        "top",
+        "bottom"
     ];
 
-    faces.forEach(([className, number]) => {
+    diceElement.innerHTML = "";
 
-        const face =
-            createDiceFace(number);
+    faces.forEach(face => {
 
-        face.classList.add(
-            className
+        const faceElement =
+            document.createElement("div");
+
+        faceElement.className =
+            `dice-face face-${face}`;
+
+        /*
+            Nilai awal semua sisi.
+            JavaScript kemudian mengubah
+            nilai visualnya.
+        */
+
+        faceElement.innerHTML =
+            createPips(1);
+
+        diceElement.appendChild(
+            faceElement
         );
-
-        element.appendChild(face);
 
     });
 
@@ -737,282 +700,303 @@ function buildDice(element, value) {
 
 
 /*
-   Sisi belakang sederhana.
+    Nilai dadu saat ini
 */
 
-function oppositeDice(value) {
-
-    const opposite = {
-        1: 6,
-        2: 5,
-        3: 4,
-        4: 3,
-        5: 2,
-        6: 1
-    };
-
-    return opposite[value];
-
-}
+let diceValue1 = 1;
+let diceValue2 = 1;
 
 
-/* DICE ROTATION */
+/*
+    Rotasi visual dadu
+*/
 
-function setDiceValue(
-    element,
-    value,
-    extraRotation = 0
+let rotationX1 = 0;
+let rotationY1 = 0;
+let rotationZ1 = 0;
+
+let rotationX2 = 0;
+let rotationY2 = 0;
+let rotationZ2 = 0;
+
+
+/*
+    Update sisi dadu
+*/
+
+function updateDiceVisual(
+    diceElement,
+    value
 ) {
 
-    if (!element) return;
+    if (!diceElement) return;
+
+    const faces =
+        diceElement.querySelectorAll(
+            ".dice-face"
+        );
 
     /*
-       Kita rebuild titiknya,
-       kemudian kasih rotasi 3D.
+        Mapping sisi agar nilai
+        terlihat seperti dadu.
     */
 
-    buildDice(
-        element,
-        value
+    const mapping = [
+        value,
+        7 - value,
+        value,
+        7 - value,
+        value,
+        7 - value
+    ];
+
+    faces.forEach(
+        (face, index) => {
+
+            face.innerHTML =
+                createPips(
+                    mapping[index]
+                );
+
+        }
     );
 
-    const rotations = {
+}
 
-        1:
-            "rotateX(0deg) rotateY(0deg)",
 
-        2:
-            "rotateX(90deg) rotateY(0deg)",
+/*
+    Tampilkan nilai akhir
+*/
 
-        3:
-            "rotateX(0deg) rotateY(-90deg)",
+function setDiceValues(
+    value1,
+    value2
+) {
 
-        4:
-            "rotateX(0deg) rotateY(90deg)",
+    diceValue1 = value1;
+    diceValue2 = value2;
 
-        5:
-            "rotateX(-90deg) rotateY(0deg)",
+    updateDiceVisual(
+        $("dice1"),
+        value1
+    );
 
-        6:
-            "rotateX(0deg) rotateY(180deg)"
-
-    };
-
-    element.style.transform =
-        rotations[value] +
-        " rotateZ(" +
-        extraRotation +
-        "deg)";
+    updateDiceVisual(
+        $("dice2"),
+        value2
+    );
 
 }
 
 
-/* RANDOM DICE */
-
-function randomDice() {
-
-    return Math.floor(
-        Math.random() * 6
-    ) + 1;
-
-}
-
-
-/* VIBRATION */
-
-function vibratePhone(duration) {
-
-    if (
-        "vibrate" in navigator
-    ) {
-
-        try {
-
-            navigator.vibrate(
-                duration
-            );
-
-        } catch (error) {}
-
-    }
-
-}
-
-
-/* START DICE */
+/*
+    Mulai game dadu
+*/
 
 function startDiceGame() {
 
-    diceRolling = false;
+    if (diceStarted) return;
+
+    diceStarted = true;
 
     diceAttempts = 0;
 
-    dice1Value = 1;
-
-    dice2Value = 1;
-
-    const dice1 =
-        document.getElementById(
-            "dice1"
-        );
-
-    const dice2 =
-        document.getElementById(
-            "dice2"
-        );
-
-    setDiceValue(
-        dice1,
-        1
-    );
-
-    setDiceValue(
-        dice2,
-        1
-    );
+    setDiceValues(1, 1);
 
     updateDiceAttempts();
 
 }
 
 
-/* ROLL */
+/*
+    Update tulisan percobaan
+*/
 
-function rollDice() {
+function updateDiceAttempts() {
 
-    if (!diceRolling) return;
+    const element =
+        $("diceAttempts");
 
+    if (!element) return;
 
-    const elapsed =
-        Date.now() -
-        diceStartTime;
-
-
-    /*
-       Semakin lama ditahan,
-       interval makin kecil.
-    */
-
-    const speed =
-        Math.max(
-            55,
-            190 -
-            Math.floor(
-                elapsed / 100
-            )
-        );
-
-
-    /*
-       Percobaan ke-5:
-       otomatis 6 + 6.
-    */
-
-    if (
-        diceAttempts >= 4
-    ) {
-
-        dice1Value = 6;
-
-        dice2Value = 6;
-
-    } else {
-
-        dice1Value =
-            randomDice();
-
-        dice2Value =
-            randomDice();
-
-    }
-
-
-    const dice1 =
-        document.getElementById(
-            "dice1"
-        );
-
-    const dice2 =
-        document.getElementById(
-            "dice2"
-        );
-
-
-    setDiceValue(
-        dice1,
-        dice1Value,
-        Math.random() * 30 - 15
-    );
-
-    setDiceValue(
-        dice2,
-        dice2Value,
-        Math.random() * 30 - 15
-    );
-
-
-    /*
-       Getaran ikut cepat ketika
-       tombol ditahan semakin lama.
-    */
-
-    const vibration =
-        Math.max(
-            20,
-            Math.min(
-                100,
-                Math.floor(
-                    25 +
-                    elapsed / 100
-                )
-            )
-        );
-
-    vibratePhone(
-        vibration
-    );
-
-
-    diceRollTimer =
-        setTimeout(
-            rollDice,
-            speed
-        );
+    element.textContent =
+        `Percobaan: ${diceAttempts} / ${MAX_DICE_ATTEMPTS}`;
 
 }
 
 
-/* BEGIN */
+/*
+    Hold start
+*/
 
-function beginDiceRoll() {
+function startDiceRoll(event) {
 
     if (diceRolling) return;
 
+    if (
+        diceAttempts >=
+        MAX_DICE_ATTEMPTS
+    ) {
+        return;
+    }
+
+
     diceRolling = true;
 
-    diceStartTime =
-        Date.now();
+    diceHoldStart =
+        performance.now();
 
-    if (holdDiceBtn) {
 
-        holdDiceBtn.classList.add(
+    const button =
+        $("holdDiceBtn");
+
+    if (button) {
+        button.classList.add(
             "pressed"
         );
+    }
+
+
+    vibrateDevice(30);
+
+
+    /*
+        Roll berjalan selama tombol ditahan.
+    */
+
+    function rollFrame() {
+
+        if (!diceRolling) return;
+
+
+        const heldTime =
+            performance.now() -
+            diceHoldStart;
+
+
+        /*
+            Semakin lama ditahan,
+            interval semakin cepat.
+        */
+
+        const speed =
+            Math.max(
+                20,
+                180 -
+                heldTime * 0.15
+            );
+
+
+        /*
+            Random dadu.
+        */
+
+        const random1 =
+            Math.floor(
+                Math.random() * 6
+            ) + 1;
+
+        const random2 =
+            Math.floor(
+                Math.random() * 6
+            ) + 1;
+
+
+        setDiceValues(
+            random1,
+            random2
+        );
+
+
+        /*
+            Rotasi semakin cepat.
+        */
+
+        const rotationSpeed =
+            Math.min(
+                45,
+                4 +
+                heldTime * 0.025
+            );
+
+
+        rotationX1 +=
+            rotationSpeed;
+
+        rotationY1 +=
+            rotationSpeed * 1.4;
+
+        rotationZ1 +=
+            rotationSpeed * .5;
+
+
+        rotationX2 +=
+            rotationSpeed * 1.2;
+
+        rotationY2 +=
+            rotationSpeed * .8;
+
+        rotationZ2 +=
+            rotationSpeed * .6;
+
+
+        applyDiceRotation();
+
+
+        /*
+            Getaran semakin cepat
+            ketika ditahan lama.
+        */
+
+        if (
+            heldTime > 200
+        ) {
+
+            vibrateDevice(
+                Math.max(
+                    15,
+                    Math.min(
+                        80,
+                        65 -
+                        heldTime * .03
+                    )
+                )
+            );
+
+        }
+
+
+        diceRollTimer =
+            setTimeout(
+                () => {
+
+                    diceAnimationFrame =
+                        requestAnimationFrame(
+                            rollFrame
+                        );
+
+                },
+                speed
+            );
 
     }
 
-    rollDice();
+
+    rollFrame();
 
 }
 
 
-/* END */
+/*
+    Stop roll
+*/
 
-function endDiceRoll() {
+function stopDiceRoll() {
 
     if (!diceRolling) return;
 
     diceRolling = false;
+
 
     if (diceRollTimer) {
 
@@ -1024,43 +1008,68 @@ function endDiceRoll() {
 
     }
 
-    if (holdDiceBtn) {
 
-        holdDiceBtn.classList.remove(
+    if (diceAnimationFrame) {
+
+        cancelAnimationFrame(
+            diceAnimationFrame
+        );
+
+        diceAnimationFrame = null;
+
+    }
+
+
+    const button =
+        $("holdDiceBtn");
+
+    if (button) {
+
+        button.classList.remove(
             "pressed"
         );
 
     }
 
 
+    const heldTime =
+        performance.now() -
+        diceHoldStart;
+
+
+    /*
+        Lama tekanan menentukan
+        seberapa lama efek akhir.
+    */
+
+    const finalDuration =
+        Math.min(
+            1500,
+            350 +
+            heldTime * .25
+        );
+
+
+    /*
+        Percobaan bertambah.
+    */
+
     diceAttempts++;
 
     updateDiceAttempts();
 
 
-    const dice1 =
-        document.getElementById(
-            "dice1"
-        );
-
-    const dice2 =
-        document.getElementById(
-            "dice2"
-        );
-
+    /*
+        5× percobaan:
+        dipaksa mendapatkan 6 + 6.
+    */
 
     if (
-        dice1Value === 6 &&
-        dice2Value === 6
+        diceAttempts >=
+        MAX_DICE_ATTEMPTS
     ) {
 
-        showLucky();
-
-        setTimeout(() => {
-
-            startFlowerBookSequence();
-
-        }, 1800);
+        finishLuckyDice();
 
         return;
 
@@ -1068,140 +1077,293 @@ function endDiceRoll() {
 
 
     /*
-       Kalau belum 6+6,
-       tetap boleh mencoba.
+        Normal random.
     */
 
-    if (diceAttempts < 5) {
+    const final1 =
+        Math.floor(
+            Math.random() * 6
+        ) + 1;
 
-        return;
+    const final2 =
+        Math.floor(
+            Math.random() * 6
+        ) + 1;
+
+
+    animateDiceToFinal(
+        final1,
+        final2,
+        finalDuration
+    );
+
+}
+
+
+/*
+    Animasi berhenti menuju angka akhir
+*/
+
+function animateDiceToFinal(
+    final1,
+    final2,
+    duration
+) {
+
+    const startTime =
+        performance.now();
+
+    const start1 =
+        diceValue1;
+
+    const start2 =
+        diceValue2;
+
+
+    function animate() {
+
+        const elapsed =
+            performance.now() -
+            startTime;
+
+        const progress =
+            Math.min(
+                1,
+                elapsed / duration
+            );
+
+
+        /*
+            Ease out
+        */
+
+        const ease =
+            1 -
+            Math.pow(
+                1 - progress,
+                4
+            );
+
+
+        if (progress < 1) {
+
+            /*
+                Selama animasi,
+                masih random.
+            */
+
+            const random1 =
+                Math.floor(
+                    Math.random() * 6
+                ) + 1;
+
+            const random2 =
+                Math.floor(
+                    Math.random() * 6
+                ) + 1;
+
+
+            setDiceValues(
+                random1,
+                random2
+            );
+
+
+            applyDiceRotation();
+
+            requestAnimationFrame(
+                animate
+            );
+
+        } else {
+
+            setDiceValues(
+                final1,
+                final2
+            );
+
+
+            /*
+                Tambahkan rotasi akhir.
+            */
+
+            rotationX1 += 360;
+            rotationY1 += 540;
+
+            rotationX2 += 450;
+            rotationY2 += 360;
+
+            applyDiceRotation();
+
+
+            /*
+                Cek apakah 6 + 6.
+            */
+
+            if (
+                final1 === 6 &&
+                final2 === 6
+            ) {
+
+                finishLuckyDice();
+
+            }
+
+        }
+
+    }
+
+
+    animate();
+
+}
+
+
+/*
+    Rotasi dadu
+*/
+
+function applyDiceRotation() {
+
+    const dice1 =
+        $("dice1");
+
+    const dice2 =
+        $("dice2");
+
+
+    if (dice1) {
+
+        dice1.style.transform =
+            `
+            rotateX(${rotationX1}deg)
+            rotateY(${rotationY1}deg)
+            rotateZ(${rotationZ1}deg)
+            `;
+
+    }
+
+
+    if (dice2) {
+
+        dice2.style.transform =
+            `
+            rotateX(${rotationX2}deg)
+            rotateY(${rotationY2}deg)
+            rotateZ(${rotationZ2}deg)
+            `;
+
+    }
+
+}
+
+
+/*
+    BERUNTUNG
+*/
+
+function finishLuckyDice() {
+
+    diceRolling = false;
+
+    setDiceValues(
+        6,
+        6
+    );
+
+
+    /*
+        Getaran panjang.
+    */
+
+    vibrateDevice([
+        80,
+        50,
+        120,
+        50,
+        180
+    ]);
+
+
+    const luckText =
+        $("luckText");
+
+    if (luckText) {
+
+        luckText.classList.remove(
+            "show"
+        );
+
+        /*
+            Force reflow agar animasi
+            bisa diputar lagi.
+        */
+
+        void luckText.offsetWidth;
+
+        luckText.classList.add(
+            "show"
+        );
 
     }
 
 
     /*
-       Safety fallback.
-       Percobaan kelima wajib 6+6.
+        Setelah efek selesai,
+        masuk ke flower loading.
     */
-
-    dice1Value = 6;
-
-    dice2Value = 6;
-
-
-    setDiceValue(
-        dice1,
-        6,
-        0
-    );
-
-    setDiceValue(
-        dice2,
-        6,
-        0
-    );
-
-
-    showLucky();
-
 
     setTimeout(() => {
 
-        startFlowerBookSequence();
-
-    }, 1800);
-
-}
-
-
-/* ATTEMPTS */
-
-function updateDiceAttempts() {
-
-    const element =
-        document.getElementById(
-            "diceAttempts"
+        showPage(
+            "page-flower"
         );
 
-    if (!element) return;
+        startFlowerLoading();
 
-    element.textContent =
-        "Percobaan: " +
-        diceAttempts +
-        " / 5";
+    }, 1900);
 
 }
 
 
-/* LUCK */
+/*
+    Event tombol dadu
+*/
 
-function showLucky() {
-
-    const text =
-        document.getElementById(
-            "luckText"
-        );
-
-    if (!text) return;
-
-    text.classList.remove(
-        "show"
-    );
-
-    /*
-       restart animation
-    */
-
-    void text.offsetWidth;
-
-    text.classList.add(
-        "show"
-    );
-
-}
-
-
-/* BUTTON */
+const holdDiceBtn =
+    $("holdDiceBtn");
 
 if (holdDiceBtn) {
 
     holdDiceBtn.addEventListener(
         "pointerdown",
-        event => {
-
-            event.preventDefault();
-
-            beginDiceRoll();
-
-        }
+        startDiceRoll
     );
 
     holdDiceBtn.addEventListener(
         "pointerup",
-        event => {
-
-            event.preventDefault();
-
-            endDiceRoll();
-
-        }
+        stopDiceRoll
     );
 
     holdDiceBtn.addEventListener(
         "pointercancel",
-        endDiceRoll
+        stopDiceRoll
     );
 
     holdDiceBtn.addEventListener(
         "pointerleave",
-        event => {
+        (event) => {
+
+            /*
+                Jangan menghentikan saat
+                pointer masih ditekan di HP.
+            */
 
             if (
-                diceRolling &&
                 event.buttons === 0
             ) {
 
-                endDiceRoll();
+                stopDiceRoll();
 
             }
 
@@ -1212,23 +1374,15 @@ if (holdDiceBtn) {
 
 
 /* =========================================================
-   FLOWER + BOOK
+   FLOWER NIGHT
 ========================================================= */
 
-function startFlowerBookSequence() {
-
-    showPage("flower");
-
-    createNightSky();
-
-    createFlowers();
-
-    startFlowerProgress();
-
-}
+let flowerStarted = false;
 
 
-/* NIGHT SKY */
+/*
+    Buat langit.
+*/
 
 function createNightSky() {
 
@@ -1241,7 +1395,7 @@ function createNightSky() {
 
 
     /*
-       Jangan duplicate.
+        Hindari membuat dua kali.
     */
 
     if (
@@ -1266,7 +1420,9 @@ function createNightSky() {
     moon.className =
         "moon";
 
-    sky.appendChild(moon);
+    sky.appendChild(
+        moon
+    );
 
 
     const stars =
@@ -1276,74 +1432,101 @@ function createNightSky() {
         "stars";
 
 
+    /*
+        Banyak bintang random.
+    */
+
     for (
         let i = 0;
-        i < 70;
+        i < 100;
         i++
     ) {
 
         const star =
-            document.createElement("span");
+            document.createElement(
+                "span"
+            );
 
         star.className =
             "star";
 
         star.style.left =
-            Math.random() * 100 +
-            "%";
+            Math.random() * 100 + "%";
 
         star.style.top =
-            Math.random() * 75 +
-            "%";
+            Math.random() * 75 + "%";
+
+        star.style.width =
+            (
+                Math.random() * 3 +
+                1
+            ) + "px";
+
+        star.style.height =
+            star.style.width;
 
         star.style.animationDelay =
-            Math.random() * 2 +
-            "s";
-
-        star.style.transform =
-            "scale(" +
             (
-                .5 +
-                Math.random()
-            ) +
-            ")";
+                Math.random() * 2
+            ) + "s";
 
-        stars.appendChild(star);
-
-    }
-
-
-    sky.appendChild(stars);
-
-    container.prepend(sky);
-
-
-    /*
-       Tanah.
-    */
-
-    if (
-        !container.querySelector(
-            ".flower-ground"
-        )
-    ) {
-
-        const ground =
-            document.createElement("div");
-
-        ground.className =
-            "flower-ground";
-
-        container.appendChild(
-            ground
+        stars.appendChild(
+            star
         );
 
     }
 
+
+    sky.appendChild(
+        stars
+    );
+
+
+    container.prepend(
+        sky
+    );
+
 }
 
 
-/* FLOWERS */
+/*
+    Buat tanah.
+*/
+
+function createFlowerGround() {
+
+    const container =
+        document.querySelector(
+            ".flower-loading"
+        );
+
+    if (!container) return;
+
+    if (
+        container.querySelector(
+            ".flower-ground"
+        )
+    ) {
+        return;
+    }
+
+
+    const ground =
+        document.createElement("div");
+
+    ground.className =
+        "flower-ground";
+
+    container.appendChild(
+        ground
+    );
+
+}
+
+
+/*
+    Buat bunga.
+*/
 
 function createFlowers() {
 
@@ -1355,48 +1538,30 @@ function createFlowers() {
     if (!container) return;
 
 
-    let flowers =
-        container.querySelector(
-            ".flowers"
-        );
+    const flowers =
+        document.createElement("div");
 
-
-    if (!flowers) {
-
-        flowers =
-            document.createElement(
-                "div"
-            );
-
-        flowers.className =
-            "flowers";
-
-        container.appendChild(
-            flowers
-        );
-
-    }
-
-
-    flowers.innerHTML = "";
+    flowers.className =
+        "flowers";
 
 
     const flowerTypes = [
-        "🌸",
         "🌷",
-        "🌺",
+        "🌸",
+        "🌹",
+        "🌼",
         "🌻",
-        "🌹"
+        "🌺"
     ];
 
 
     /*
-       Bunga tumbuh dari bawah.
+        18 bunga.
     */
 
     for (
         let i = 0;
-        i < 15;
+        i < 18;
         i++
     ) {
 
@@ -1408,6 +1573,7 @@ function createFlowers() {
         flower.className =
             "falling-flower";
 
+
         flower.textContent =
             flowerTypes[
                 Math.floor(
@@ -1416,27 +1582,37 @@ function createFlowers() {
                 )
             ];
 
+
         flower.style.left =
-            Math.random() *
-            96 +
-            "%";
+            (
+                Math.random() * 96
+            ) + "%";
+
+
+        /*
+            Bunga punya tinggi
+            random.
+        */
 
         flower.style.bottom =
-            Math.random() *
-            12 +
-            "%";
+            (
+                8 +
+                Math.random() * 18
+            ) + "%";
 
-        flower.style.animationDelay =
-            Math.random() * 3 +
-            "s";
 
         flower.style.fontSize =
             (
-                25 +
-                Math.random() *
-                25
-            ) +
-            "px";
+                24 +
+                Math.random() * 30
+            ) + "px";
+
+
+        flower.style.animationDelay =
+            (
+                Math.random() * 2
+            ) + "s";
+
 
         flowers.appendChild(
             flower
@@ -1444,207 +1620,243 @@ function createFlowers() {
 
     }
 
+
+    container.appendChild(
+        flowers
+    );
+
 }
 
 
-/* FLOWER PROGRESS */
+/*
+    Loading bunga.
+*/
 
-function startFlowerProgress() {
+function startFlowerLoading() {
 
-    let percent = 0;
+    if (flowerStarted) return;
 
-    const page =
+    flowerStarted = true;
+
+
+    createNightSky();
+
+    createFlowerGround();
+
+    createFlowers();
+
+
+    /*
+        Info loading
+    */
+
+    const container =
         document.querySelector(
             ".flower-loading"
         );
 
-    if (!page) return;
+    if (!container) return;
 
 
-    let info =
-        page.querySelector(
-            ".flower-loading-info"
+    const info =
+        document.createElement(
+            "div"
         );
 
-
-    if (!info) {
-
-        info =
-            document.createElement(
-                "div"
-            );
-
-        info.className =
-            "flower-loading-info";
-
-        info.innerHTML = `
-            <h2>
-                Menyiapkan sesuatu untukmu...
-            </h2>
-
-            <div class="flower-progress">
-                <div id="flowerProgress"></div>
-            </div>
-
-            <div id="flowerPercent">
-                0%
-            </div>
-        `;
-
-        page.appendChild(info);
-
-    }
+    info.className =
+        "flower-loading-info";
 
 
-    const progress =
-        document.getElementById(
-            "flowerProgress"
-        );
+    info.innerHTML = `
 
-    const percentText =
-        document.getElementById(
-            "flowerPercent"
-        );
+        <h2>
+            Sebentar lagi...
+        </h2>
+
+        <div class="flower-progress">
+
+            <div id="flowerProgress"></div>
+
+        </div>
+
+        <div id="flowerPercent">
+            0%
+        </div>
+
+    `;
 
 
-    const timer =
+    container.appendChild(
+        info
+    );
+
+
+    let progress = 0;
+
+
+    const interval =
         setInterval(() => {
 
-            percent +=
-                Math.floor(
-                    Math.random() * 3
-                ) + 1;
+            progress +=
+                Math.random() * 4 + 2;
 
 
-            if (percent >= 100) {
+            if (progress >= 100) {
 
-                percent = 100;
+                progress = 100;
 
-                clearInterval(timer);
+                clearInterval(
+                    interval
+                );
 
 
-                if (progress) {
-                    progress.style.width =
+                if (
+                    $("flowerPercent")
+                ) {
+
+                    $("flowerPercent")
+                        .textContent =
                         "100%";
+
                 }
 
-                if (percentText) {
-                    percentText.textContent =
+
+                if (
+                    $("flowerProgress")
+                ) {
+
+                    $("flowerProgress")
+                        .style.width =
                         "100%";
+
                 }
 
 
                 setTimeout(() => {
 
-                    startCatchBooks();
+                    prepareCatchBooks();
 
-                }, 800);
+                }, 700);
+
+
+            } else {
+
+                if (
+                    $("flowerPercent")
+                ) {
+
+                    $("flowerPercent")
+                        .textContent =
+                        Math.floor(
+                            progress
+                        ) + "%";
+
+                }
+
+
+                if (
+                    $("flowerProgress")
+                ) {
+
+                    $("flowerProgress")
+                        .style.width =
+                        progress + "%";
+
+                }
 
             }
 
-
-            if (progress) {
-
-                progress.style.width =
-                    percent + "%";
-
-            }
-
-            if (percentText) {
-
-                percentText.textContent =
-                    percent + "%";
-
-            }
-
-        }, 60);
+        }, 100);
 
 }
 
 
 /* =========================================================
-   CATCH BOOK 3X
+   CATCH BOOK
+   3× RANDOM
 ========================================================= */
 
 let booksCaught = 0;
 
-let bookTimer = null;
+let booksCreated = 0;
 
-function startCatchBooks() {
+let catchBookRunning = false;
 
-    booksCaught = 0;
 
-    const page =
+/*
+    Instruction
+*/
+
+function createBookInstruction() {
+
+    const container =
         document.querySelector(
             ".flower-loading"
         );
 
-    if (!page) return;
+    if (!container) return;
 
 
-    /*
-       Instruction
-    */
-
-    let instruction =
-        page.querySelector(
-            ".book-instruction"
+    const instruction =
+        document.createElement(
+            "div"
         );
 
+    instruction.className =
+        "book-instruction";
 
-    if (!instruction) {
-
-        instruction =
-            document.createElement(
-                "div"
-            );
-
-        instruction.className =
-            "book-instruction";
-
-        instruction.innerHTML =
-            "📖 <strong>TANGKAP BUKU 3×</strong><br>" +
-            "Tangkap bukunya untuk membuka halaman selanjutnya";
-
-        page.appendChild(
-            instruction
-        );
-
-    }
+    instruction.textContent =
+        "📖 Tangkap buku 3× untuk membuka halaman selanjutnya";
 
 
-    /*
-       Buku pertama.
-    */
-
-    spawnBook();
-
-
-    /*
-       Buku berikutnya datang
-       setiap 2 detik.
-    */
+    container.appendChild(
+        instruction
+    );
 
 }
 
 
-/* SPAWN BOOK */
+/*
+    Persiapan buku
+*/
 
-function spawnBook() {
+function prepareCatchBooks() {
+
+    createBookInstruction();
+
+    setTimeout(() => {
+
+        spawnCatchBook();
+
+    }, 800);
+
+}
+
+
+/*
+    Buku datang random.
+*/
+
+function spawnCatchBook() {
 
     if (
-        booksCaught >= 3
+        booksCreated >= 3
     ) {
         return;
     }
 
 
-    const page =
+    booksCreated++;
+
+    catchBookRunning = true;
+
+
+    const container =
         document.querySelector(
             ".flower-loading"
         );
 
-    if (!page) return;
+    if (!container) return;
 
 
     const book =
@@ -1652,227 +1864,189 @@ function spawnBook() {
             "button"
         );
 
-    book.type = "button";
-
     book.className =
         "catch-book";
+
+    book.type =
+        "button";
+
 
     book.textContent =
         "📖";
 
 
     /*
-       Posisi random.
+        Posisi horizontal random.
     */
 
     const randomLeft =
-        5 +
-        Math.random() *
-        85;
-
-    const randomRotation =
-        -15 +
-        Math.random() *
-        30;
-
-    const duration =
-        2.5 +
-        Math.random() *
-        2.5;
+        8 +
+        Math.random() * 84;
 
 
     book.style.left =
         randomLeft + "%";
 
+
     book.style.setProperty(
         "--book-rotation",
-        randomRotation + "deg"
+        (
+            Math.random() * 40 -
+            20
+        ) + "deg"
     );
 
-    book.style.animationDuration =
-        duration + "s";
 
+    /*
+        Tangkap buku.
+    */
 
     book.addEventListener(
         "click",
         () => {
 
-            catchBook(book);
-
-        }
-    );
-
-
-    page.appendChild(book);
-
-
-    /*
-       Kalau tidak ditangkap,
-       tetap kirim buku berikutnya.
-    */
-
-    book.addEventListener(
-        "animationend",
-        () => {
-
             if (
-                !book.classList.contains(
+                book.classList.contains(
                     "book-caught"
                 )
             ) {
+                return;
+            }
 
-                book.remove();
 
-                scheduleNextBook();
+            booksCaught++;
+
+            book.classList.add(
+                "book-caught"
+            );
+
+
+            vibrateDevice(70);
+
+
+            /*
+                Buku berikutnya
+                muncul setelah 2 detik.
+            */
+
+            if (
+                booksCaught < 3
+            ) {
+
+                setTimeout(() => {
+
+                    spawnCatchBook();
+
+                }, 2000);
+
+            } else {
+
+                /*
+                    Semua tertangkap.
+                */
+
+                setTimeout(() => {
+
+                    openBookCover();
+
+                }, 800);
 
             }
 
         }
     );
 
-}
 
-
-/* NEXT BOOK */
-
-function scheduleNextBook() {
-
-    if (
-        booksCaught >= 3
-    ) {
-        finishBookCatch();
-        return;
-    }
-
-
-    clearTimeout(bookTimer);
-
-
-    bookTimer =
-        setTimeout(() => {
-
-            spawnBook();
-
-        }, 2000);
-
-}
-
-
-/* CATCH */
-
-function catchBook(book) {
-
-    if (
-        book.classList.contains(
-            "book-caught"
-        )
-    ) {
-        return;
-    }
-
-
-    booksCaught++;
-
-
-    book.classList.add(
-        "book-caught"
+    container.appendChild(
+        book
     );
 
 
     /*
-       Haptic feedback
+        Kalau buku tidak ditangkap,
+        tetap hilang setelah lewat.
+        Tapi user harus menunggu
+        buku berikutnya.
     */
 
-    vibratePhone(80);
-
-
     setTimeout(() => {
 
-        if (book.parentNode) {
+        if (
+            !book.classList.contains(
+                "book-caught"
+            )
+        ) {
+
             book.remove();
+
+            /*
+                Jangan menghilangkan
+                kesempatan tangkap.
+            */
+
+            if (
+                booksCaught <
+                booksCreated
+            ) {
+
+                setTimeout(() => {
+
+                    spawnCatchBook();
+
+                }, 1000);
+
+            }
+
         }
 
-    }, 400);
-
-
-    if (
-        booksCaught >= 3
-    ) {
-
-        finishBookCatch();
-
-    } else {
-
-        scheduleNextBook();
-
-    }
-
-}
-
-
-/* FINISH */
-
-function finishBookCatch() {
-
-    clearTimeout(
-        bookTimer
-    );
-
-
-    setTimeout(() => {
-
-        showPage("cover");
-
-        startBookCover();
-
-    }, 900);
+    }, 4500);
 
 }
 
 
 /* =========================================================
-   3D BOOK COVER
+   BOOK COVER
 ========================================================= */
 
-function startBookCover() {
+function openBookCover() {
+
+    showPage(
+        "page-cover"
+    );
+
 
     const page =
-        document.getElementById(
-            "page-cover"
-        );
+        $("page-cover");
 
     if (!page) return;
 
 
-    /*
-       Jika elemen belum dibuat oleh HTML,
-       kita buat otomatis.
-    */
-
-    if (
-        page.querySelector(
-            ".book-scene"
-        )
-    ) {
-        return;
-    }
-
-
     page.innerHTML = `
+
         <div class="book-scene">
 
             <div class="book-table"></div>
 
-            <div class="book-3d">
+            <div
+                id="book3d"
+                class="book-3d">
+
+                <div class="book-cover-back"></div>
+
+                <div class="book-pages"></div>
+
+                <div class="book-spine"></div>
 
                 <div class="book-cover-front">
 
                     <div class="cover-decoration">
-                        ✦
+                        ✦ ✦ ✦
                     </div>
 
                     <h1>
-                        A This book is for my partner.
+                        A This Book
+                        <br>
+                        Is For My Partner
                     </h1>
 
                     <div class="cover-decoration">
@@ -1882,104 +2056,80 @@ function startBookCover() {
                     <button
                         id="openBookBtn"
                         class="book-next-button">
+
                         BUKA BUKU
+
                     </button>
 
                 </div>
 
-                <div class="book-pages"></div>
-
-                <div class="book-spine"></div>
-
-                <div class="book-cover-back"></div>
-
             </div>
 
             <div class="book-open-hint">
-                Klik buku untuk membukanya
+
+                Klik bukunya untuk membuka
+
             </div>
 
         </div>
+
     `;
 
 
-    const book =
-        page.querySelector(
-            ".book-3d"
+    const openButton =
+        $("openBookBtn");
+
+
+    if (openButton) {
+
+        openButton.addEventListener(
+            "click",
+            openBook
         );
 
-    const button =
-        document.getElementById(
-            "openBookBtn"
-        );
-
-
-    /*
-       Klik DI MANA SAJA pada halaman
-       buku akan terbuka.
-    */
-
-    page.addEventListener(
-        "click",
-        event => {
-
-            if (
-                event.target === button ||
-                book.contains(event.target)
-            ) {
-
-                openBook();
-
-            }
-
-        }
-    );
+    }
 
 }
 
 
-/* OPEN BOOK */
-
-let bookOpened = false;
+/*
+    Buka buku
+*/
 
 function openBook() {
 
-    if (bookOpened) return;
-
-    bookOpened = true;
-
-
-    const page =
-        document.getElementById(
-            "page-cover"
-        );
-
-    page.classList.add(
-        "book-opening"
-    );
-
-
     const book =
-        page.querySelector(
-            ".book-3d"
-        );
-
+        $("book3d");
 
     if (book) {
 
+        book.classList.add(
+            "book-opening"
+        );
+
+
         book.style.transform =
-            "rotateX(8deg) rotateY(-75deg)";
+            `
+            rotateX(8deg)
+            rotateY(-25deg)
+            scale(1.03)
+            `;
 
     }
 
 
+    /*
+        Kamera tidak pindah.
+        Hanya buku yang bergerak.
+    */
+
     setTimeout(() => {
 
-        showPage("gallery");
+        showPage(
+            "page-gallery"
+        );
 
-        prepareGallery();
-
-    }, 1200);
+    }, 1100);
 
 }
 
@@ -1990,48 +2140,25 @@ function openBook() {
 
 function prepareGallery() {
 
-    const page =
-        document.getElementById(
-            "page-gallery"
-        );
-
-    if (!page) return;
-
-
     /*
-       Kalau HTML lama masih dipakai,
-       kita tambahkan class supaya CSS
-       tetap bagus.
+        Bungkus foto dengan frame.
     */
 
-    const background =
-        page.querySelector(
-            ".book-background"
-        );
+    document
+        .querySelectorAll(
+            ".photo-row img"
+        )
+        .forEach(img => {
 
+            if (
+                img.parentElement.classList
+                    .contains(
+                        "photo-frame"
+                    )
+            ) {
+                return;
+            }
 
-    if (background) {
-
-        background.classList.add(
-            "book-page-scene"
-        );
-
-    }
-
-
-    const images =
-        page.querySelectorAll(
-            "img"
-        );
-
-
-    images.forEach(img => {
-
-        if (
-            !img.parentElement.classList.contains(
-                "photo-frame"
-            )
-        ) {
 
             const frame =
                 document.createElement(
@@ -2040,6 +2167,7 @@ function prepareGallery() {
 
             frame.className =
                 "photo-frame";
+
 
             img.parentNode.insertBefore(
                 frame,
@@ -2050,45 +2178,20 @@ function prepareGallery() {
                 img
             );
 
-        }
-
-    });
-
-
-    const video =
-        page.querySelector(
-            "#topVideo"
-        );
-
-
-    if (video) {
-
-        const parent =
-            video.parentElement;
-
-        if (
-            !parent.classList.contains(
-                "gallery-video"
-            )
-        ) {
-
-            parent.classList.add(
-                "gallery-video"
-            );
-
-        }
-
-    }
+        });
 
 }
 
 
-/* GALLERY -> VIDEOS */
+prepareGallery();
+
+
+/*
+    Gallery → videos
+*/
 
 const nextVideoPage =
-    document.getElementById(
-        "nextVideoPage"
-    );
+    $("nextVideoPage");
 
 if (nextVideoPage) {
 
@@ -2096,9 +2199,9 @@ if (nextVideoPage) {
         "click",
         () => {
 
-            showPage("videos");
-
-            prepareVideos();
+            showPage(
+                "page-videos"
+            );
 
         }
     );
@@ -2107,32 +2210,27 @@ if (nextVideoPage) {
 
 
 /* =========================================================
-   VIDEOS
+   VIDEO PAGE
 ========================================================= */
 
 function prepareVideos() {
 
-    const page =
-        document.getElementById(
-            "page-videos"
-        );
+    document
+        .querySelectorAll(
+            ".video-grid video"
+        )
+        .forEach(video => {
 
-    if (!page) return;
+            if (
+                video.parentElement
+                    .classList
+                    .contains(
+                        "memory-video-frame"
+                    )
+            ) {
+                return;
+            }
 
-
-    const videos =
-        page.querySelectorAll(
-            "video"
-        );
-
-
-    videos.forEach(video => {
-
-        if (
-            !video.parentElement.classList.contains(
-                "memory-video-frame"
-            )
-        ) {
 
             const frame =
                 document.createElement(
@@ -2141,6 +2239,7 @@ function prepareVideos() {
 
             frame.className =
                 "memory-video-frame";
+
 
             video.parentNode.insertBefore(
                 frame,
@@ -2151,34 +2250,19 @@ function prepareVideos() {
                 video
             );
 
-        }
-
-    });
-
-
-    const background =
-        page.querySelector(
-            ".book-background"
-        );
-
-
-    if (background) {
-
-        background.classList.add(
-            "book-page-scene"
-        );
-
-    }
+        });
 
 }
 
+prepareVideos();
 
-/* VIDEOS -> ENDING */
+
+/*
+    Videos → ending
+*/
 
 const toEnding =
-    document.getElementById(
-        "toEnding"
-    );
+    $("toEnding");
 
 if (toEnding) {
 
@@ -2186,9 +2270,11 @@ if (toEnding) {
         "click",
         () => {
 
-            showPage("ending");
+            showPage(
+                "page-ending"
+            );
 
-            prepareEnding();
+            startEndingText();
 
         }
     );
@@ -2197,89 +2283,80 @@ if (toEnding) {
 
 
 /* =========================================================
-   ENDING
+   ENDING TEXT
 ========================================================= */
 
-function prepareEnding() {
+function startEndingText() {
 
     const ending =
-        document.getElementById(
-            "endingText"
-        );
+        $("endingText");
 
     if (!ending) return;
 
 
     /*
-       Jangan isi kalau user nanti
-       sudah punya teks sendiri.
+        Jangan isi ulang jika sudah ada.
     */
 
     if (
-        ending.children.length === 0
+        ending.dataset.loaded ===
+        "true"
     ) {
-
-        const lines = [
-            "Terima kasih sudah sampai sejauh ini.",
-            "Semoga setiap halaman kecil di dalam buku ini bisa membuatmu tersenyum.",
-            "Aku mungkin tidak selalu bisa mengatakan semuanya secara langsung.",
-            "Tapi aku ingin kamu tahu kalau kamu sangat berarti.",
-            "Semoga cerita kita terus memiliki banyak halaman baru.",
-            "Dan semoga halaman berikutnya selalu menjadi sesuatu yang indah.",
-            "❤️"
-        ];
+        return;
+    }
 
 
-        lines.forEach(text => {
+    ending.dataset.loaded =
+        "true";
 
-            const line =
-                document.createElement(
-                    "div"
-                );
 
-            line.className =
-                "ending-line";
+    const text = [
 
-            line.textContent =
-                text;
+        "Untuk kamu yang selalu menjadi bagian indah dalam hidupku.",
 
-            ending.appendChild(
-                line
+        "Terima kasih sudah hadir dan memberikan begitu banyak cerita.",
+
+        "Mungkin semua yang ada di dalam buku kecil ini tidak sempurna.",
+
+        "Tapi setiap halaman di dalamnya dibuat dengan perasaan yang tulus.",
+
+        "Semoga setiap kenangan yang kita punya selalu menjadi sesuatu yang indah untuk diingat.",
+
+        "Dan semoga masih ada banyak halaman lain yang bisa kita tulis bersama.",
+
+        "❤️"
+
+    ];
+
+
+    text.forEach(line => {
+
+        const paragraph =
+            document.createElement(
+                "div"
             );
 
-        });
+        paragraph.className =
+            "ending-line";
 
-    }
+        paragraph.textContent =
+            line;
 
-
-    /*
-       Tambahkan tombol restart
-       kalau belum ada.
-    */
-
-    let restart =
-        document.getElementById(
-            "restartBtn"
+        ending.appendChild(
+            paragraph
         );
 
-
-    if (restart) {
-
-        restart.classList.add(
-            "restart-button"
-        );
-
-    }
+    });
 
 }
 
 
-/* RESTART */
+/* =========================================================
+   RESTART
+========================================================= */
 
 const restartBtn =
-    document.getElementById(
-        "restartBtn"
-    );
+    $("restartBtn");
 
 if (restartBtn) {
 
@@ -2296,33 +2373,42 @@ if (restartBtn) {
 
 
 /* =========================================================
-   PREVENT DOUBLE TOUCH
+   DICE INITIALIZATION
 ========================================================= */
 
-document.addEventListener(
-    "touchstart",
-    () => {},
-    {
-        passive: true
-    }
+createDiceFaces(
+    $("dice1")
+);
+
+createDiceFaces(
+    $("dice2")
+);
+
+setDiceValues(
+    1,
+    1
 );
 
 
 /* =========================================================
-   PAGE VISIBILITY
+   PREVENT CONTEXT MENU
+   (OPTIONAL)
 ========================================================= */
 
 document.addEventListener(
-    "visibilitychange",
-    () => {
+    "contextmenu",
+    event => {
+
+        /*
+            Jangan ganggu video.
+        */
 
         if (
-            document.hidden
+            event.target.tagName !==
+            "VIDEO"
         ) {
 
-            /*
-               Tidak perlu melakukan apa-apa.
-            */
+            event.preventDefault();
 
         }
 

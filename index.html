@@ -1,307 +1,1150 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For My Partner ❤️</title>
 
-<link rel="stylesheet" href="style.css">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>For My Partner ❤️</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
+
 <body>
 
-<!-- AUDIO -->
-<audio id="loadingMusic" src="audio/lagu_10_detik.mp3"></audio>
-<audio id="mainMusic" src="audio/video1.mp3"></audio>
+    <!-- =====================================================
+         AUDIO
+    ====================================================== -->
 
-<!-- PLAY PAUSE -->
-<button id="musicBtn" class="music-btn">
-    🎵
-</button>
+    <!-- Lagu loading awal 10 detik -->
+    <audio
+        id="loadingMusic"
+        src="audio/lagu_10_detik.mp3"
+        preload="auto">
+    </audio>
 
-<!-- ========================= -->
-<!-- PAGE 1 START -->
-<!-- ========================= -->
+    <!-- Lagu utama -->
+    <audio
+        id="mainMusic"
+        src="audio/video1.mp3"
+        preload="auto"
+        loop>
+    </audio>
 
-<section id="page-start" class="page active">
 
-<div class="start-container">
+    <!-- =====================================================
+         MUSIC BUTTON
+    ====================================================== -->
 
-<h1 class="start-title">
-WELCOME
-</h1>
+    <button
+        id="musicBtn"
+        class="music-btn"
+        aria-label="Play / Pause Musik">
+        🎵
+    </button>
 
-<p class="note">
-Silahkan klik pojok kanan atas untuk menyalakan lagu pada web
-</p>
 
-<button id="startBtn" class="start-btn">
-START
-</button>
+    <!-- =====================================================
+         PAGE 1
+         LOADING AWAL
+         
+         Tidak ada halaman START.
+         Website langsung dimulai dari sini.
+    ====================================================== -->
 
-</div>
+    <section
+        id="page-loading"
+        class="page active">
 
-</section>
+        <div class="loading-wrapper">
 
-<!-- ========================= -->
-<!-- PAGE 2 LOADING -->
-<!-- ========================= -->
+            <div class="rainbow-loader">
+                <div class="loader-inner"></div>
+            </div>
 
-<section id="page-loading" class="page">
+            <div id="loadingPercent">
+                0%
+            </div>
 
-<div class="loading-wrapper">
+        </div>
 
-<div class="rainbow-loader">
-<div class="loader-inner"></div>
-</div>
+    </section>
 
-<div id="loadingPercent">
-0%
-</div>
 
-</div>
+    <!-- =====================================================
+         PAGE 2
+         WELCOME
+    ====================================================== -->
 
-</section>
+    <section
+        id="page-welcome"
+        class="page">
 
-<!-- ========================= -->
-<!-- PAGE 3 WELCOME -->
-<!-- ========================= -->
+        <div class="welcome-container">
 
-<section id="page-welcome" class="page">
+            <h2>
+                WELCOME
+            </h2>
 
-<div class="welcome-container">
+            <h1>
+                HII!!
+            </h1>
 
-<h2>
-WELCOME
-</h2>
+            <div class="wave-hand">
+                👋
+            </div>
 
-<h1>
-HII!!
-</h1>
+            <p>
+                Silahkan Klik Enter Untuk Membuka
+                Halaman Selanjutnya
+            </p>
 
-<div class="wave-hand">
-👋
-</div>
+            <button id="enterBtn">
+                ENTER
+            </button>
 
-<p>
-Silahkan Klik Enter Untuk Membuka Halaman Selanjutnya
-</p>
+        </div>
 
-<button id="enterBtn">
-ENTER
-</button>
+    </section>
 
-</div>
 
-</section>
+    <!-- =====================================================
+         PAGE 3
+         MINI GAME MEMORY PASSWORD
+    ====================================================== -->
 
-<!-- ========================= -->
-<!-- PAGE 4 PASSWORD GAME -->
-<!-- ========================= -->
+    <section
+        id="page-password"
+        class="page">
 
-<section id="page-password" class="page">
+        <div class="memory-game-container">
 
-<div class="game-container">
+            <div class="memory-header">
 
-<h1>
-MINIGAMES
-</h1>
+                <h1>
+                    MINIGAMES
+                </h1>
 
-<h2>
-SECRET GAME
-</h2>
+                <h2>
+                    MEMORY GAME
+                </h2>
 
-<p>
-Silahkan ketikan password sesuai kotak warna merah
-</p>
+                <p>
+                    Hafalkan huruf yang menyala
+                </p>
 
-<div class="password-clue">
+                <p>
+                    Lalu masukkan password
+                </p>
 
-<div class="target-box">F</div>
-<div class="target-box">O</div>
-<div class="target-box">R</div>
-<div class="target-box">T</div>
-<div class="target-box">A</div>
-<div class="target-box">N</div>
+            </div>
 
-</div>
 
-<div id="randomLetters" class="random-grid">
+            <!--
+                HURUF ACAK
 
-</div>
+                FORTAN tidak ditampilkan sebagai clue.
 
-</div>
+                JavaScript akan membuat huruf acak
+                di dalam kotak hijau.
 
-</section>
+                Huruf F O R T A N akan menyala
+                secara bersamaan selama ±2 detik.
+            -->
 
-<!-- ========================= -->
-<!-- PAGE 5 DICE GAME -->
-<!-- ========================= -->
+            <div
+                id="randomLetters"
+                class="random-grid">
+            </div>
 
-<section id="page-dice" class="page">
 
-<div class="dice-wrapper">
+            <!-- Kesempatan salah -->
 
-<h1>
-MINIGAMES
-</h1>
+            <div
+                id="memoryAttempts"
+                class="memory-attempts">
 
-<h2>
-LEMPAR DADU
-</h2>
+                Kesempatan salah:
+                <span id="wrongCount">
+                    0
+                </span>
+                / 3
 
-<div class="dice-container">
+            </div>
 
-<div class="dice" id="dice1">
-1
-</div>
 
-<div class="dice" id="dice2">
-1
-</div>
+            <!--
+                Kotak untuk memasukkan password.
+                Akan dibuat oleh JavaScript.
+            -->
 
-</div>
+            <div
+                id="passwordInputArea"
+                class="password-input-area">
+            </div>
 
-<button id="holdDiceBtn">
-TEKAN & TAHAN
-</button>
 
-<div id="luckText">
-BERUNTUNG!
-</div>
+            <div
+                id="memoryStatus"
+                class="memory-status">
+            </div>
 
-</div>
+        </div>
 
-</section>
+    </section>
 
-<!-- ========================= -->
-<!-- PAGE 6 FLOWER LOADING -->
-<!-- ========================= -->
 
-<section id="page-flower" class="page">
+    <!-- =====================================================
+         PAGE 4
+         MINI GAME DADU
+    ====================================================== -->
 
-<div class="flower-loading">
+    <section
+        id="page-dice"
+        class="page">
 
-<div id="bookDrop" class="book-drop">
-📖
-</div>
+        <div class="casino-table">
 
-</div>
 
-</section>
+            <!-- Dekorasi uang -->
 
-<!-- ========================= -->
-<!-- PAGE 7 BOOK COVER -->
-<!-- ========================= -->
+            <div
+                class="casino-money"
+                aria-hidden="true">
 
-<section id="page-cover" class="page">
+                <div class="money-stack">
+                    💵
+                </div>
 
-<div class="book-cover">
+                <div class="money-stack">
+                    💵
+                </div>
 
-<h1>
-A This book is for my partner.
-</h1>
+                <div class="money-stack">
+                    💵
+                </div>
 
-<button id="openBookBtn">
-Buka Halaman Buku
-</button>
+            </div>
 
-</div>
 
-</section>
+            <!-- Dekorasi chip -->
 
-<!-- ========================= -->
-<!-- PAGE 8 GALLERY -->
-<!-- ========================= -->
+            <div
+                class="casino-chips"
+                aria-hidden="true">
 
-<section id="page-gallery" class="page">
+                <div class="chip-stack">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
 
-<div class="book-background">
+                <div class="chip-stack">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
 
-<div class="video-top">
+                <div class="chip-stack">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
 
-<video
-id="topVideo"
-src="videos/video1.mp4"
-autoplay
-muted
-playsinline
-loop>
-</video>
+            </div>
 
-</div>
 
-<div class="photo-row">
+            <!-- Judul -->
 
-<img id="img1" src="images/foto1.jpg">
-<img id="img2" src="images/foto2.jpg">
-<img id="img3" src="images/foto3.jpg">
-<img id="img4" src="images/foto4.jpg">
-<img id="img5" src="images/foto5.jpg">
+            <div class="dice-header">
 
-</div>
+                <h1>
+                    MINIGAMES
+                </h1>
 
-<div class="photo-row">
+                <h2>
+                    LEMPAR DADU
+                </h2>
 
-<img id="img6" src="images/foto6.jpg">
-<img id="img7" src="images/foto7.jpg">
-<img id="img8" src="images/foto8.jpg">
-<img id="img9" src="images/foto9.jpg">
-<img id="img10" src="images/foto10.jpg">
+                <p>
+                    Tekan dan tahan untuk menggacha
+                </p>
 
-</div>
+            </div>
 
-<button id="nextVideoPage">
-LANJUT
-</button>
 
-</div>
+            <!--
+                AREA DADU 3D
 
-</section>
+                CSS akan membentuk keenam sisi
+                masing-masing kubus.
+            -->
 
-<!-- ========================= -->
-<!-- PAGE 9 VIDEO MEMORIES -->
-<!-- ========================= -->
+            <div class="dice-area">
 
-<section id="page-videos" class="page">
 
-<div class="book-background">
+                <!-- DADU 1 -->
 
-<div class="video-grid">
+                <div
+                    id="dice1"
+                    class="dice">
 
-<video controls src="videos/video1.mp4"></video>
-<video controls src="videos/video2.mp4"></video>
-<video controls src="videos/video3.mp4"></video>
-<video controls src="videos/video4.mp4"></video>
+                    <!-- FRONT -->
 
-</div>
+                    <div
+                        class="dice-face face-front">
 
-<button id="toEnding">
-LANJUT
-</button>
+                        <span
+                            class="pip center">
+                        </span>
 
-</div>
+                    </div>
 
-</section>
 
-<!-- ========================= -->
-<!-- PAGE 10 ENDING -->
-<!-- ========================= -->
+                    <!-- BACK -->
 
-<section id="page-ending" class="page">
+                    <div
+                        class="dice-face face-back">
 
-<div id="endingText" class="ending-scroll">
+                        <span
+                            class="pip top-left">
+                        </span>
 
-<!-- TEKS PANJANG NANTI DISINI -->
+                        <span
+                            class="pip bottom-right">
+                        </span>
 
-</div>
+                    </div>
 
-<button id="restartBtn">
-MULAI KEMBALI
-</button>
 
-</section>
+                    <!-- RIGHT -->
 
-<script src="script.js"></script>
+                    <div
+                        class="dice-face face-right">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip center">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+
+                    <!-- LEFT -->
+
+                    <div
+                        class="dice-face face-left">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip top-right">
+                        </span>
+
+                        <span
+                            class="pip bottom-left">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+
+                    <!-- TOP -->
+
+                    <div
+                        class="dice-face face-top">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip top-right">
+                        </span>
+
+                        <span
+                            class="pip center">
+                        </span>
+
+                        <span
+                            class="pip bottom-left">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+
+                    <!-- BOTTOM -->
+
+                    <div
+                        class="dice-face face-bottom">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip middle-left">
+                        </span>
+
+                        <span
+                            class="pip bottom-left">
+                        </span>
+
+                        <span
+                            class="pip top-right">
+                        </span>
+
+                        <span
+                            class="pip middle-right">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DADU 2 -->
+
+                <div
+                    id="dice2"
+                    class="dice">
+
+                    <!-- FRONT -->
+
+                    <div
+                        class="dice-face face-front">
+
+                        <span
+                            class="pip center">
+                        </span>
+
+                    </div>
+
+
+                    <!-- BACK -->
+
+                    <div
+                        class="dice-face face-back">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+
+                    <!-- RIGHT -->
+
+                    <div
+                        class="dice-face face-right">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip center">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+
+                    <!-- LEFT -->
+
+                    <div
+                        class="dice-face face-left">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip top-right">
+                        </span>
+
+                        <span
+                            class="pip bottom-left">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+
+                    <!-- TOP -->
+
+                    <div
+                        class="dice-face face-top">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip top-right">
+                        </span>
+
+                        <span
+                            class="pip center">
+                        </span>
+
+                        <span
+                            class="pip bottom-left">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+
+                    <!-- BOTTOM -->
+
+                    <div
+                        class="dice-face face-bottom">
+
+                        <span
+                            class="pip top-left">
+                        </span>
+
+                        <span
+                            class="pip middle-left">
+                        </span>
+
+                        <span
+                            class="pip bottom-left">
+                        </span>
+
+                        <span
+                            class="pip top-right">
+                        </span>
+
+                        <span
+                            class="pip middle-right">
+                        </span>
+
+                        <span
+                            class="pip bottom-right">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TOMBOL DADU
+            ================================================== -->
+
+            <button
+                id="holdDiceBtn"
+                class="dice-button">
+
+                TEKAN &amp; TAHAN
+
+            </button>
+
+
+            <!-- Percobaan -->
+
+            <div
+                id="diceAttempts"
+                class="dice-attempts">
+
+                Percobaan:
+                <span id="diceAttemptCount">
+                    0
+                </span>
+                / 5
+
+            </div>
+
+
+            <!-- BERUNTUNG -->
+
+            <div
+                id="luckText"
+                class="luck-text">
+
+                BERUNTUNG!
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PAGE 5
+         FLOWER LOADING
+    ====================================================== -->
+
+    <section
+        id="page-flower"
+        class="page">
+
+        <div
+            id="flowerLoading"
+            class="flower-loading">
+
+
+            <!-- LANGIT -->
+
+            <div class="night-sky">
+
+                <!-- Bulan -->
+
+                <div
+                    class="moon">
+                </div>
+
+
+                <!-- Bintang -->
+
+                <div
+                    id="stars"
+                    class="stars">
+                </div>
+
+            </div>
+
+
+            <!-- BUNGA -->
+
+            <div
+                id="flowers"
+                class="flowers">
+            </div>
+
+
+            <!-- Tanah -->
+
+            <div
+                class="flower-ground">
+            </div>
+
+
+            <!-- Loading -->
+
+            <div
+                class="flower-loading-info">
+
+                <h2>
+                    A little something for you...
+                </h2>
+
+                <div
+                    class="flower-progress">
+
+                    <div
+                        id="flowerProgress">
+                    </div>
+
+                </div>
+
+                <p
+                    id="flowerPercent">
+                    0%
+                </p>
+
+            </div>
+
+
+            <!--
+                KETERANGAN TANGKAP BUKU
+
+                Muncul saat mini-game buku dimulai.
+            -->
+
+            <div
+                id="bookInstruction"
+                class="book-instruction">
+
+                TANGKAP BUKU
+                <strong>3×</strong>
+                UNTUK MEMBUKA
+                HALAMAN SELANJUTNYA
+
+            </div>
+
+
+            <!--
+                Buku random akan dibuat
+                JavaScript di sini.
+            -->
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PAGE 6
+         SAMPUL BUKU 3D
+    ====================================================== -->
+
+    <section
+        id="page-cover"
+        class="page">
+
+        <div class="book-scene">
+
+
+            <!-- MEJA -->
+
+            <div class="book-table">
+
+
+                <!-- Buku 3D -->
+
+                <div
+                    id="book3D"
+                    class="book-3d">
+
+
+                    <!-- COVER DEPAN -->
+
+                    <div
+                        class="book-cover-front">
+
+                        <div
+                            class="cover-decoration">
+                            ✦
+                        </div>
+
+                        <h1>
+                            A This book is
+                            for my partner.
+                        </h1>
+
+                        <div
+                            class="cover-decoration">
+                            ✦
+                        </div>
+
+                    </div>
+
+
+                    <!-- PUNGGUNG BUKU -->
+
+                    <div
+                        class="book-spine">
+                    </div>
+
+
+                    <!-- HALAMAN -->
+
+                    <div
+                        class="book-pages">
+                    </div>
+
+
+                    <!-- COVER BELAKANG -->
+
+                    <div
+                        class="book-cover-back">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!--
+                Tidak ada tombol.
+
+                Buku akan menjadi objek yang
+                dibuka secara langsung.
+            -->
+
+            <p class="book-open-hint">
+                Klik buku untuk membuka
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PAGE 7
+         HALAMAN FOTO
+    ====================================================== -->
+
+    <section
+        id="page-gallery"
+        class="page">
+
+        <div
+            class="book-page-scene">
+
+
+            <div class="book-page">
+
+
+                <!-- VIDEO 16:9 DI ATAS -->
+
+                <div
+                    class="gallery-video">
+
+                    <video
+                        id="topVideo"
+                        src="videos/video1.mp4"
+                        autoplay
+                        muted
+                        playsinline
+                        loop>
+                    </video>
+
+                </div>
+
+
+                <!-- FOTO 1–5 -->
+
+                <div
+                    class="photo-row">
+
+                    <div class="photo-frame">
+                        <img
+                            id="img1"
+                            src="images/foto1.jpg"
+                            alt="Foto 1">
+                    </div>
+
+                    <div class="photo-frame">
+                        <img
+                            id="img2"
+                            src="images/foto2.jpg"
+                            alt="Foto 2">
+                    </div>
+
+                    <div class="photo-frame">
+                        <img
+                            id="img3"
+                            src="images/foto3.jpg"
+                            alt="Foto 3">
+                    </div>
+
+                    <div class="photo-frame">
+                        <img
+                            id="img4"
+                            src="images/foto4.jpg"
+                            alt="Foto 4">
+                    </div>
+
+                    <div class="photo-frame">
+                        <img
+                            id="img5"
+                            src="images/foto5.jpg"
+                            alt="Foto 5">
+                    </div>
+
+                </div>
+
+
+                <!-- FOTO 6–10 -->
+
+                <div
+                    class="photo-row">
+
+                    <div class="photo-frame">
+                        <img
+                            id="img6"
+                            src="images/foto6.jpg"
+                            alt="Foto 6">
+                    </div>
+
+                    <div class="photo-frame">
+                        <img
+                            id="img7"
+                            src="images/foto7.jpg"
+                            alt="Foto 7">
+                    </div>
+
+                    <div class="photo-frame">
+                        <img
+                            id="img8"
+                            src="images/foto8.jpg"
+                            alt="Foto 8">
+                    </div>
+
+                    <div class="photo-frame">
+                        <img
+                            id="img9"
+                            src="images/foto9.jpg"
+                            alt="Foto 9">
+                    </div>
+
+                    <div class="photo-frame">
+                        <img
+                            id="img10"
+                            src="images/foto10.jpg"
+                            alt="Foto 10">
+                    </div>
+
+                </div>
+
+
+                <!-- LANJUT -->
+
+                <button
+                    id="nextVideoPage"
+                    class="book-next-button">
+
+                    LANJUT
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PAGE 8
+         4 VIDEO
+    ====================================================== -->
+
+    <section
+        id="page-videos"
+        class="page">
+
+        <div
+            class="book-page-scene">
+
+            <div
+                class="book-page">
+
+
+                <div
+                    class="video-memory-grid">
+
+
+                    <div class="memory-video-frame">
+
+                        <video
+                            controls
+                            playsinline
+                            src="videos/video1.mp4">
+                        </video>
+
+                    </div>
+
+
+                    <div class="memory-video-frame">
+
+                        <video
+                            controls
+                            playsinline
+                            src="videos/video2.mp4">
+                        </video>
+
+                    </div>
+
+
+                    <div class="memory-video-frame">
+
+                        <video
+                            controls
+                            playsinline
+                            src="videos/video3.mp4">
+                        </video>
+
+                    </div>
+
+
+                    <div class="memory-video-frame">
+
+                        <video
+                            controls
+                            playsinline
+                            src="videos/video4.mp4">
+                        </video>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LANJUT -->
+
+                <button
+                    id="toEnding"
+                    class="book-next-button">
+
+                    LANJUT
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PAGE 9
+         ENDING / LONG TEXT
+    ====================================================== -->
+
+    <section
+        id="page-ending"
+        class="page">
+
+        <div
+            class="ending-book-scene">
+
+
+            <div
+                id="endingText"
+                class="ending-scroll">
+
+
+                <!--
+                    Isi teks panjang nanti di sini.
+
+                    CSS akan membuat setiap baris
+                    terlihat seperti tulisan di halaman buku.
+                -->
+
+                <div class="ending-line">
+                    Terima kasih sudah menjadi bagian
+                    dari cerita kecil ini.
+                </div>
+
+                <div class="ending-line">
+                    Mungkin halaman-halaman ini
+                    sederhana, tapi semuanya dibuat
+                    dengan satu alasan.
+                </div>
+
+                <div class="ending-line">
+                    Karena ada seseorang yang
+                    membuat banyak hal terasa
+                    lebih berarti.
+                </div>
+
+                <div class="ending-line">
+                    Aku tidak tahu sejauh apa cerita
+                    ini akan berjalan.
+                </div>
+
+                <div class="ending-line">
+                    Tapi selama masih ada halaman
+                    yang bisa ditulis, semoga
+                    ceritanya tetap indah.
+                </div>
+
+                <div class="ending-line">
+                    Dan kalau suatu hari nanti kita
+                    membuka kembali buku ini,
+                    semoga kita masih bisa tersenyum
+                    mengingat semuanya.
+                </div>
+
+                <div class="ending-line">
+                    Karena pada akhirnya, bukan
+                    seberapa sempurna ceritanya.
+                </div>
+
+                <div class="ending-line">
+                    Tapi dengan siapa cerita itu
+                    kita jalani.
+                </div>
+
+                <div class="ending-line">
+                    Terima kasih sudah membaca
+                    sampai halaman terakhir.
+                </div>
+
+                <div class="ending-line">
+                    ❤️
+                </div>
+
+
+                <!--
+                    SPACER AGAR BENAR-BENAR ADA
+                    AREA SCROLL KE PALING BAWAH.
+                -->
+
+                <div class="ending-spacer">
+                </div>
+
+            </div>
+
+
+            <!--
+                Tombol ini disembunyikan oleh CSS/JS
+                sampai user benar-benar berada
+                di bagian paling bawah.
+            -->
+
+            <button
+                id="restartBtn"
+                class="restart-button">
+
+                MULAI KEMBALI
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="script.js"></script>
 
 </body>
+
 </html>

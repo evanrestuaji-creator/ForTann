@@ -1,6 +1,6 @@
 /* =========================================================
    FOR MY PARTNER
-   SCRIPT.JS FINAL
+   SCRIPT.JS FIXED
 ========================================================= */
 
 
@@ -32,8 +32,6 @@ const loadingMusic = $("loadingMusic");
 const mainMusic = $("mainMusic");
 const musicBtn = $("musicBtn");
 
-let musicPlaying = false;
-
 if (musicBtn) {
 
     musicBtn.addEventListener("click", () => {
@@ -44,7 +42,6 @@ if (musicBtn) {
 
             mainMusic.play()
                 .then(() => {
-                    musicPlaying = true;
                     musicBtn.textContent = "🔊";
                 })
                 .catch(() => {});
@@ -52,10 +49,8 @@ if (musicBtn) {
         } else {
 
             mainMusic.pause();
-
-            musicPlaying = false;
-
             musicBtn.textContent = "🎵";
+
         }
 
     });
@@ -84,9 +79,7 @@ const loadingInterval = setInterval(() => {
         }
 
         setTimeout(() => {
-
             showPage("page-welcome");
-
         }, 700);
 
     } else {
@@ -116,7 +109,7 @@ if (loadingMusic) {
 
 
 /* =========================================================
-   WELCOME → PASSWORD
+   WELCOME → MEMORY
 ========================================================= */
 
 const enterBtn = $("enterBtn");
@@ -140,58 +133,36 @@ if (enterBtn) {
 
 
 /* =========================================================
-   MEMORY PASSWORD GAME
+   MEMORY GAME
 ========================================================= */
 
 const letters = [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J",
-    "K",
-    "L"
+    "A", "B", "C", "D",
+    "E", "F", "G", "H",
+    "I", "J", "K", "L"
 ];
 
 let memorySequence = [];
 let playerSequence = [];
 
 let memoryMistakes = 0;
-
 let memoryLocked = true;
-
 let memoryStarted = false;
 
-
-/*
-    Acak array
-*/
 
 function shuffleArray(array) {
 
     const result = [...array];
 
-    for (
-        let i = result.length - 1;
-        i > 0;
-        i--
-    ) {
+    for (let i = result.length - 1; i > 0; i--) {
 
         const j =
-            Math.floor(
-                Math.random() * (i + 1)
-            );
+            Math.floor(Math.random() * (i + 1));
 
         [
             result[i],
             result[j]
-        ] =
-        [
+        ] = [
             result[j],
             result[i]
         ];
@@ -201,10 +172,6 @@ function shuffleArray(array) {
     return result;
 }
 
-
-/*
-    Buat huruf
-*/
 
 function createMemoryGrid() {
 
@@ -222,14 +189,9 @@ function createMemoryGrid() {
         const button =
             document.createElement("button");
 
-        button.className =
-            "memory-letter";
-
-        button.textContent =
-            letter;
-
-        button.dataset.letter =
-            letter;
+        button.className = "memory-letter";
+        button.textContent = letter;
+        button.dataset.letter = letter;
 
         button.addEventListener(
             "click",
@@ -243,37 +205,22 @@ function createMemoryGrid() {
 }
 
 
-/*
-    Mulai game
-*/
-
 function startMemoryGame() {
 
     if (memoryStarted) return;
 
     memoryStarted = true;
-
     memoryMistakes = 0;
-
     memoryLocked = true;
 
     createMemoryGrid();
 
     setTimeout(() => {
-
         showMemoryClue();
-
     }, 500);
 
 }
 
-
-/*
-    Tampilkan clue
-
-    Semua huruf yang dipilih
-    menyala BERSAMAAN.
-*/
 
 function showMemoryClue() {
 
@@ -286,11 +233,6 @@ function showMemoryClue() {
 
     if (!buttons.length) return;
 
-
-    /*
-        Ambil 1–3 huruf sebagai kode.
-    */
-
     const shuffled =
         shuffleArray(buttons);
 
@@ -299,12 +241,9 @@ function showMemoryClue() {
             3,
             Math.max(
                 1,
-                Math.floor(
-                    buttons.length / 3
-                )
+                Math.floor(buttons.length / 3)
             )
         );
-
 
     memorySequence =
         shuffled
@@ -313,11 +252,6 @@ function showMemoryClue() {
                 button =>
                     button.dataset.letter
             );
-
-
-    /*
-        Semua clue menyala bersamaan.
-    */
 
     shuffled
         .slice(0, clueCount)
@@ -328,11 +262,6 @@ function showMemoryClue() {
             );
 
         });
-
-
-    /*
-        Durasi clue 2 detik.
-    */
 
     setTimeout(() => {
 
@@ -345,17 +274,12 @@ function showMemoryClue() {
         });
 
         memoryLocked = false;
-
         playerSequence = [];
 
     }, 2000);
 
 }
 
-
-/*
-    Klik huruf
-*/
 
 function handleMemoryClick(button) {
 
@@ -369,7 +293,6 @@ function handleMemoryClick(button) {
         return;
     }
 
-
     const selectedLetter =
         button.dataset.letter;
 
@@ -381,14 +304,8 @@ function handleMemoryClick(button) {
         "memory-selected"
     );
 
-
     const index =
         playerSequence.length - 1;
-
-
-    /*
-        Salah
-    */
 
     if (
         selectedLetter !==
@@ -396,7 +313,6 @@ function handleMemoryClick(button) {
     ) {
 
         memoryMistakes++;
-
         memoryLocked = true;
 
         button.classList.remove(
@@ -407,18 +323,10 @@ function handleMemoryClick(button) {
             "memory-error"
         );
 
-
-        /*
-            Jika salah 3×,
-            kode diacak ulang.
-        */
-
         if (memoryMistakes >= 3) {
 
             setTimeout(() => {
-
                 resetMemoryGame();
-
             }, 700);
 
         } else {
@@ -437,11 +345,6 @@ function handleMemoryClick(button) {
 
         return;
     }
-
-
-    /*
-        Benar semua
-    */
 
     if (
         playerSequence.length ===
@@ -462,11 +365,9 @@ function handleMemoryClick(button) {
 
             });
 
-
         setTimeout(() => {
 
             showPage("page-dice");
-
             startDiceGame();
 
         }, 1000);
@@ -475,11 +376,6 @@ function handleMemoryClick(button) {
 
 }
 
-
-/*
-    Reset percobaan tanpa
-    mengubah posisi huruf.
-*/
 
 function resetCurrentMemoryAttempt() {
 
@@ -497,7 +393,6 @@ function resetCurrentMemoryAttempt() {
 
         });
 
-
     setTimeout(() => {
 
         memoryLocked = false;
@@ -507,47 +402,32 @@ function resetCurrentMemoryAttempt() {
 }
 
 
-/*
-    Salah 3×
-    Huruf dibuat ulang
-    sehingga posisinya berubah.
-*/
-
 function resetMemoryGame() {
 
     memoryMistakes = 0;
-
     playerSequence = [];
-
     memoryLocked = true;
 
     const grid = $("randomLetters");
 
     if (grid) {
-
         grid.classList.add(
             "memory-shuffle"
         );
-
     }
-
 
     setTimeout(() => {
 
         if (grid) {
-
             grid.classList.remove(
                 "memory-shuffle"
             );
-
         }
 
         createMemoryGrid();
 
         setTimeout(() => {
-
             showMemoryClue();
-
         }, 400);
 
     }, 500);
@@ -560,13 +440,10 @@ function resetMemoryGame() {
 ========================================================= */
 
 let diceStarted = false;
-
 let diceRolling = false;
-
 let diceHoldStart = 0;
 
 let diceRollTimer = null;
-
 let diceAnimationFrame = null;
 
 let diceAttempts = 0;
@@ -574,9 +451,28 @@ let diceAttempts = 0;
 const MAX_DICE_ATTEMPTS = 5;
 
 
-/*
-    Getaran HP
-*/
+/* ---------------------------------------------------------
+   DICE VALUES
+--------------------------------------------------------- */
+
+let diceValue1 = 1;
+let diceValue2 = 1;
+
+
+/* ---------------------------------------------------------
+   DICE ROTATION
+--------------------------------------------------------- */
+
+let rotationX1 = -15;
+let rotationY1 = 0;
+
+let rotationX2 = -15;
+let rotationY2 = 0;
+
+
+/* ---------------------------------------------------------
+   VIBRATION
+--------------------------------------------------------- */
 
 function vibrateDevice(duration) {
 
@@ -592,9 +488,9 @@ function vibrateDevice(duration) {
 }
 
 
-/*
-    Buat titik dadu
-*/
+/* =========================================================
+   DICE PIPS
+========================================================= */
 
 function createPips(number) {
 
@@ -643,9 +539,7 @@ function createPips(number) {
         .map(position => {
 
             return `
-                <span
-                    class="pip ${position}">
-                </span>
+                <span class="pip ${position}"></span>
             `;
 
         })
@@ -654,9 +548,9 @@ function createPips(number) {
 }
 
 
-/*
-    Criar 6 sisi dadu
-*/
+/* =========================================================
+   CREATE DICE FACES
+========================================================= */
 
 function createDiceFaces(diceElement) {
 
@@ -681,12 +575,6 @@ function createDiceFaces(diceElement) {
         faceElement.className =
             `dice-face face-${face}`;
 
-        /*
-            Nilai awal semua sisi.
-            JavaScript kemudian mengubah
-            nilai visualnya.
-        */
-
         faceElement.innerHTML =
             createPips(1);
 
@@ -699,30 +587,9 @@ function createDiceFaces(diceElement) {
 }
 
 
-/*
-    Nilai dadu saat ini
-*/
-
-let diceValue1 = 1;
-let diceValue2 = 1;
-
-
-/*
-    Rotasi visual dadu
-*/
-
-let rotationX1 = 0;
-let rotationY1 = 0;
-let rotationZ1 = 0;
-
-let rotationX2 = 0;
-let rotationY2 = 0;
-let rotationZ2 = 0;
-
-
-/*
-    Update sisi dadu
-*/
+/* =========================================================
+   CORRECT DICE FACE VALUES
+========================================================= */
 
 function updateDiceVisual(
     diceElement,
@@ -731,24 +598,39 @@ function updateDiceVisual(
 
     if (!diceElement) return;
 
+    /*
+        Opposite faces:
+
+        1 ↔ 6
+        2 ↔ 5
+        3 ↔ 4
+
+        Front is always the requested value.
+        Back is its opposite.
+
+        Other sides are filled with a
+        valid complementary arrangement.
+    */
+
+    const sideValues = {
+
+        1: [1, 6, 3, 4, 2, 5],
+        2: [2, 5, 3, 4, 6, 1],
+        3: [3, 4, 1, 6, 2, 5],
+        4: [4, 3, 1, 6, 5, 2],
+        5: [5, 2, 3, 4, 6, 1],
+        6: [6, 1, 3, 4, 2, 5]
+
+    };
+
+    const mapping =
+        sideValues[value] ||
+        sideValues[1];
+
     const faces =
         diceElement.querySelectorAll(
             ".dice-face"
         );
-
-    /*
-        Mapping sisi agar nilai
-        terlihat seperti dadu.
-    */
-
-    const mapping = [
-        value,
-        7 - value,
-        value,
-        7 - value,
-        value,
-        7 - value
-    ];
 
     faces.forEach(
         (face, index) => {
@@ -764,9 +646,9 @@ function updateDiceVisual(
 }
 
 
-/*
-    Tampilkan nilai akhir
-*/
+/* =========================================================
+   SET DICE VALUES
+========================================================= */
 
 function setDiceValues(
     value1,
@@ -789,28 +671,164 @@ function setDiceValues(
 }
 
 
+/* =========================================================
+   DICE ORIENTATION
+========================================================= */
+
 /*
-    Mulai game dadu
+    Front face is the face we want to show.
+
+    Instead of randomly rotating Z,
+    we keep Z = 0 so the dice don't become
+    visually crooked.
 */
+
+function orientDiceToFront(
+    diceElement,
+    value,
+    which
+) {
+
+    if (!diceElement) return;
+
+    let x = -15;
+    let y = 0;
+
+    /*
+        Every value gets a different visual
+        orientation while keeping the dice
+        upright.
+    */
+
+    switch (value) {
+
+        case 1:
+            x = -15;
+            y = 0;
+            break;
+
+        case 2:
+            x = -15;
+            y = -90;
+            break;
+
+        case 3:
+            x = -15;
+            y = -180;
+            break;
+
+        case 4:
+            x = -15;
+            y = 90;
+            break;
+
+        case 5:
+            x = 75;
+            y = 0;
+            break;
+
+        case 6:
+            x = -105;
+            y = 0;
+            break;
+
+    }
+
+    /*
+        Add enough full rotations for animation,
+        but don't rotate on Z.
+    */
+
+    if (which === 1) {
+
+        rotationX1 =
+            Math.round(rotationX1 / 360) * 360 +
+            x;
+
+        rotationY1 =
+            Math.round(rotationY1 / 360) * 360 +
+            y;
+
+    } else {
+
+        rotationX2 =
+            Math.round(rotationX2 / 360) * 360 +
+            x;
+
+        rotationY2 =
+            Math.round(rotationY2 / 360) * 360 +
+            y;
+
+    }
+
+    applyDiceRotation();
+
+}
+
+
+/* =========================================================
+   APPLY DICE ROTATION
+========================================================= */
+
+function applyDiceRotation() {
+
+    const dice1 = $("dice1");
+    const dice2 = $("dice2");
+
+    if (dice1) {
+
+        dice1.style.transform =
+            `
+            rotateX(${rotationX1}deg)
+            rotateY(${rotationY1}deg)
+            rotateZ(0deg)
+            `;
+
+    }
+
+    if (dice2) {
+
+        dice2.style.transform =
+            `
+            rotateX(${rotationX2}deg)
+            rotateY(${rotationY2}deg)
+            rotateZ(0deg)
+            `;
+
+    }
+
+}
+
+
+/* =========================================================
+   START DICE
+========================================================= */
 
 function startDiceGame() {
 
     if (diceStarted) return;
 
     diceStarted = true;
-
     diceAttempts = 0;
 
     setDiceValues(1, 1);
+
+    rotationX1 = -15;
+    rotationY1 = 0;
+
+    rotationX2 = -15;
+    rotationY2 = 0;
+
+    applyDiceRotation();
 
     updateDiceAttempts();
 
 }
 
 
-/*
-    Update tulisan percobaan
-*/
+/* =========================================================
+   ATTEMPT
+========================================================= */
 
 function updateDiceAttempts() {
 
@@ -825,11 +843,15 @@ function updateDiceAttempts() {
 }
 
 
-/*
-    Hold start
-*/
+/* =========================================================
+   DICE HOLD START
+========================================================= */
 
 function startDiceRoll(event) {
+
+    if (event) {
+        event.preventDefault();
+    }
 
     if (diceRolling) return;
 
@@ -840,12 +862,10 @@ function startDiceRoll(event) {
         return;
     }
 
-
     diceRolling = true;
 
     diceHoldStart =
         performance.now();
-
 
     const button =
         $("holdDiceBtn");
@@ -856,147 +876,104 @@ function startDiceRoll(event) {
         );
     }
 
-
     vibrateDevice(30);
 
-
-    /*
-        Roll berjalan selama tombol ditahan.
-    */
-
-    function rollFrame() {
-
-        if (!diceRolling) return;
-
-
-        const heldTime =
-            performance.now() -
-            diceHoldStart;
-
-
-        /*
-            Semakin lama ditahan,
-            interval semakin cepat.
-        */
-
-        const speed =
-            Math.max(
-                20,
-                180 -
-                heldTime * 0.15
-            );
-
-
-        /*
-            Random dadu.
-        */
-
-        const random1 =
-            Math.floor(
-                Math.random() * 6
-            ) + 1;
-
-        const random2 =
-            Math.floor(
-                Math.random() * 6
-            ) + 1;
-
-
-        setDiceValues(
-            random1,
-            random2
-        );
-
-
-        /*
-            Rotasi semakin cepat.
-        */
-
-        const rotationSpeed =
-            Math.min(
-                45,
-                4 +
-                heldTime * 0.025
-            );
-
-
-        rotationX1 +=
-            rotationSpeed;
-
-        rotationY1 +=
-            rotationSpeed * 1.4;
-
-        rotationZ1 +=
-            rotationSpeed * .5;
-
-
-        rotationX2 +=
-            rotationSpeed * 1.2;
-
-        rotationY2 +=
-            rotationSpeed * .8;
-
-        rotationZ2 +=
-            rotationSpeed * .6;
-
-
-        applyDiceRotation();
-
-
-        /*
-            Getaran semakin cepat
-            ketika ditahan lama.
-        */
-
-        if (
-            heldTime > 200
-        ) {
-
-            vibrateDevice(
-                Math.max(
-                    15,
-                    Math.min(
-                        80,
-                        65 -
-                        heldTime * .03
-                    )
-                )
-            );
-
-        }
-
-
-        diceRollTimer =
-            setTimeout(
-                () => {
-
-                    diceAnimationFrame =
-                        requestAnimationFrame(
-                            rollFrame
-                        );
-
-                },
-                speed
-            );
-
-    }
-
-
-    rollFrame();
+    rollDiceLoop();
 
 }
 
 
-/*
-    Stop roll
-*/
+/* =========================================================
+   ROLL LOOP
+========================================================= */
+
+function rollDiceLoop() {
+
+    if (!diceRolling) return;
+
+    const heldTime =
+        performance.now() -
+        diceHoldStart;
+
+    const speed =
+        Math.max(
+            25,
+            180 -
+            heldTime * 0.15
+        );
+
+    const random1 =
+        Math.floor(
+            Math.random() * 6
+        ) + 1;
+
+    const random2 =
+        Math.floor(
+            Math.random() * 6
+        ) + 1;
+
+    setDiceValues(
+        random1,
+        random2
+    );
+
+    /*
+        Rotate only X/Y.
+        Z stays at 0.
+    */
+
+    const rotationSpeed =
+        Math.min(
+            35,
+            4 +
+            heldTime * 0.02
+        );
+
+    rotationX1 += rotationSpeed;
+    rotationY1 += rotationSpeed * 1.2;
+
+    rotationX2 += rotationSpeed * 1.1;
+    rotationY2 += rotationSpeed * .9;
+
+    applyDiceRotation();
+
+    if (heldTime > 200) {
+
+        vibrateDevice(
+            Math.max(
+                15,
+                Math.min(
+                    60,
+                    55 -
+                    heldTime * .02
+                )
+            )
+        );
+
+    }
+
+    diceRollTimer =
+        setTimeout(() => {
+
+            diceAnimationFrame =
+                requestAnimationFrame(
+                    rollDiceLoop
+                );
+
+        }, speed);
+
+}
+
+
+/* =========================================================
+   STOP DICE
+========================================================= */
 
 function stopDiceRoll() {
 
     if (!diceRolling) return;
 
     diceRolling = false;
-
 
     if (diceRollTimer) {
 
@@ -1008,7 +985,6 @@ function stopDiceRoll() {
 
     }
 
-
     if (diceAnimationFrame) {
 
         cancelAnimationFrame(
@@ -1018,7 +994,6 @@ function stopDiceRoll() {
         diceAnimationFrame = null;
 
     }
-
 
     const button =
         $("holdDiceBtn");
@@ -1031,37 +1006,23 @@ function stopDiceRoll() {
 
     }
 
-
     const heldTime =
         performance.now() -
         diceHoldStart;
 
-
-    /*
-        Lama tekanan menentukan
-        seberapa lama efek akhir.
-    */
-
     const finalDuration =
         Math.min(
-            1500,
+            1300,
             350 +
-            heldTime * .25
+            heldTime * .22
         );
-
-
-    /*
-        Percobaan bertambah.
-    */
 
     diceAttempts++;
 
     updateDiceAttempts();
 
-
     /*
-        5× percobaan:
-        dipaksa mendapatkan 6 + 6.
+        Percobaan ke-5 = pasti 6 + 6.
     */
 
     if (
@@ -1069,16 +1030,15 @@ function stopDiceRoll() {
         MAX_DICE_ATTEMPTS
     ) {
 
-        finishLuckyDice();
+        animateDiceToFinal(
+            6,
+            6,
+            finalDuration
+        );
 
         return;
 
     }
-
-
-    /*
-        Normal random.
-    */
 
     const final1 =
         Math.floor(
@@ -1090,7 +1050,6 @@ function stopDiceRoll() {
             Math.random() * 6
         ) + 1;
 
-
     animateDiceToFinal(
         final1,
         final2,
@@ -1100,9 +1059,9 @@ function stopDiceRoll() {
 }
 
 
-/*
-    Animasi berhenti menuju angka akhir
-*/
+/* =========================================================
+   FINAL DICE ANIMATION
+========================================================= */
 
 function animateDiceToFinal(
     final1,
@@ -1112,13 +1071,6 @@ function animateDiceToFinal(
 
     const startTime =
         performance.now();
-
-    const start1 =
-        diceValue1;
-
-    const start2 =
-        diceValue2;
-
 
     function animate() {
 
@@ -1132,25 +1084,7 @@ function animateDiceToFinal(
                 elapsed / duration
             );
 
-
-        /*
-            Ease out
-        */
-
-        const ease =
-            1 -
-            Math.pow(
-                1 - progress,
-                4
-            );
-
-
         if (progress < 1) {
-
-            /*
-                Selama animasi,
-                masih random.
-            */
 
             const random1 =
                 Math.floor(
@@ -1162,12 +1096,20 @@ function animateDiceToFinal(
                     Math.random() * 6
                 ) + 1;
 
-
             setDiceValues(
                 random1,
                 random2
             );
 
+            /*
+                Smooth upright rotation.
+            */
+
+            rotationX1 += 18;
+            rotationY1 += 22;
+
+            rotationX2 += 20;
+            rotationY2 += 18;
 
             applyDiceRotation();
 
@@ -1177,35 +1119,39 @@ function animateDiceToFinal(
 
         } else {
 
+            /*
+                Final value.
+            */
+
             setDiceValues(
                 final1,
                 final2
             );
 
-
             /*
-                Tambahkan rotasi akhir.
+                Put the correct face forward.
             */
 
-            rotationX1 += 360;
-            rotationY1 += 540;
+            orientDiceToFront(
+                $("dice1"),
+                final1,
+                1
+            );
 
-            rotationX2 += 450;
-            rotationY2 += 360;
-
-            applyDiceRotation();
-
-
-            /*
-                Cek apakah 6 + 6.
-            */
+            orientDiceToFront(
+                $("dice2"),
+                final2,
+                2
+            );
 
             if (
                 final1 === 6 &&
                 final2 === 6
             ) {
 
-                finishLuckyDice();
+                setTimeout(() => {
+                    finishLuckyDice();
+                }, 250);
 
             }
 
@@ -1213,68 +1159,32 @@ function animateDiceToFinal(
 
     }
 
-
     animate();
 
 }
 
 
-/*
-    Rotasi dadu
-*/
-
-function applyDiceRotation() {
-
-    const dice1 =
-        $("dice1");
-
-    const dice2 =
-        $("dice2");
-
-
-    if (dice1) {
-
-        dice1.style.transform =
-            `
-            rotateX(${rotationX1}deg)
-            rotateY(${rotationY1}deg)
-            rotateZ(${rotationZ1}deg)
-            `;
-
-    }
-
-
-    if (dice2) {
-
-        dice2.style.transform =
-            `
-            rotateX(${rotationX2}deg)
-            rotateY(${rotationY2}deg)
-            rotateZ(${rotationZ2}deg)
-            `;
-
-    }
-
-}
-
-
-/*
-    BERUNTUNG
-*/
+/* =========================================================
+   LUCKY
+========================================================= */
 
 function finishLuckyDice() {
 
     diceRolling = false;
 
-    setDiceValues(
+    setDiceValues(6, 6);
+
+    orientDiceToFront(
+        $("dice1"),
         6,
-        6
+        1
     );
 
-
-    /*
-        Getaran panjang.
-    */
+    orientDiceToFront(
+        $("dice2"),
+        6,
+        2
+    );
 
     vibrateDevice([
         80,
@@ -1283,7 +1193,6 @@ function finishLuckyDice() {
         50,
         180
     ]);
-
 
     const luckText =
         $("luckText");
@@ -1294,11 +1203,6 @@ function finishLuckyDice() {
             "show"
         );
 
-        /*
-            Force reflow agar animasi
-            bisa diputar lagi.
-        */
-
         void luckText.offsetWidth;
 
         luckText.classList.add(
@@ -1306,12 +1210,6 @@ function finishLuckyDice() {
         );
 
     }
-
-
-    /*
-        Setelah efek selesai,
-        masuk ke flower loading.
-    */
 
     setTimeout(() => {
 
@@ -1326,9 +1224,9 @@ function finishLuckyDice() {
 }
 
 
-/*
-    Event tombol dadu
-*/
+/* =========================================================
+   DICE BUTTON EVENTS
+========================================================= */
 
 const holdDiceBtn =
     $("holdDiceBtn");
@@ -1352,11 +1250,11 @@ if (holdDiceBtn) {
 
     holdDiceBtn.addEventListener(
         "pointerleave",
-        (event) => {
+        event => {
 
             /*
-                Jangan menghentikan saat
-                pointer masih ditekan di HP.
+                Only stop if the finger
+                has actually been released.
             */
 
             if (
@@ -1380,10 +1278,6 @@ if (holdDiceBtn) {
 let flowerStarted = false;
 
 
-/*
-    Buat langit.
-*/
-
 function createNightSky() {
 
     const container =
@@ -1393,11 +1287,6 @@ function createNightSky() {
 
     if (!container) return;
 
-
-    /*
-        Hindari membuat dua kali.
-    */
-
     if (
         container.querySelector(
             ".night-sky"
@@ -1406,13 +1295,11 @@ function createNightSky() {
         return;
     }
 
-
     const sky =
         document.createElement("div");
 
     sky.className =
         "night-sky";
-
 
     const moon =
         document.createElement("div");
@@ -1424,17 +1311,11 @@ function createNightSky() {
         moon
     );
 
-
     const stars =
         document.createElement("div");
 
     stars.className =
         "stars";
-
-
-    /*
-        Banyak bintang random.
-    */
 
     for (
         let i = 0;
@@ -1456,19 +1337,17 @@ function createNightSky() {
         star.style.top =
             Math.random() * 75 + "%";
 
+        const size =
+            Math.random() * 3 + 1;
+
         star.style.width =
-            (
-                Math.random() * 3 +
-                1
-            ) + "px";
+            size + "px";
 
         star.style.height =
-            star.style.width;
+            size + "px";
 
         star.style.animationDelay =
-            (
-                Math.random() * 2
-            ) + "s";
+            Math.random() * 2 + "s";
 
         stars.appendChild(
             star
@@ -1476,11 +1355,9 @@ function createNightSky() {
 
     }
 
-
     sky.appendChild(
         stars
     );
-
 
     container.prepend(
         sky
@@ -1488,10 +1365,6 @@ function createNightSky() {
 
 }
 
-
-/*
-    Buat tanah.
-*/
 
 function createFlowerGround() {
 
@@ -1510,9 +1383,10 @@ function createFlowerGround() {
         return;
     }
 
-
     const ground =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     ground.className =
         "flower-ground";
@@ -1524,10 +1398,6 @@ function createFlowerGround() {
 }
 
 
-/*
-    Buat bunga.
-*/
-
 function createFlowers() {
 
     const container =
@@ -1537,13 +1407,21 @@ function createFlowers() {
 
     if (!container) return;
 
+    if (
+        container.querySelector(
+            ".flowers"
+        )
+    ) {
+        return;
+    }
 
     const flowers =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     flowers.className =
         "flowers";
-
 
     const flowerTypes = [
         "🌷",
@@ -1553,11 +1431,6 @@ function createFlowers() {
         "🌻",
         "🌺"
     ];
-
-
-    /*
-        18 bunga.
-    */
 
     for (
         let i = 0;
@@ -1573,7 +1446,6 @@ function createFlowers() {
         flower.className =
             "falling-flower";
 
-
         flower.textContent =
             flowerTypes[
                 Math.floor(
@@ -1582,44 +1454,27 @@ function createFlowers() {
                 )
             ];
 
-
         flower.style.left =
-            (
-                Math.random() * 96
-            ) + "%";
-
-
-        /*
-            Bunga punya tinggi
-            random.
-        */
+            Math.random() * 96 + "%";
 
         flower.style.bottom =
-            (
-                8 +
-                Math.random() * 18
-            ) + "%";
-
+            8 +
+            Math.random() * 18 +
+            "%";
 
         flower.style.fontSize =
-            (
-                24 +
-                Math.random() * 30
-            ) + "px";
-
+            24 +
+            Math.random() * 30 +
+            "px";
 
         flower.style.animationDelay =
-            (
-                Math.random() * 2
-            ) + "s";
-
+            Math.random() * 2 + "s";
 
         flowers.appendChild(
             flower
         );
 
     }
-
 
     container.appendChild(
         flowers
@@ -1628,9 +1483,9 @@ function createFlowers() {
 }
 
 
-/*
-    Loading bunga.
-*/
+/* =========================================================
+   FLOWER LOADING
+========================================================= */
 
 function startFlowerLoading() {
 
@@ -1638,17 +1493,9 @@ function startFlowerLoading() {
 
     flowerStarted = true;
 
-
     createNightSky();
-
     createFlowerGround();
-
     createFlowers();
-
-
-    /*
-        Info loading
-    */
 
     const container =
         document.querySelector(
@@ -1656,7 +1503,6 @@ function startFlowerLoading() {
         );
 
     if (!container) return;
-
 
     const info =
         document.createElement(
@@ -1666,7 +1512,6 @@ function startFlowerLoading() {
     info.className =
         "flower-loading-info";
 
-
     info.innerHTML = `
 
         <h2>
@@ -1674,9 +1519,7 @@ function startFlowerLoading() {
         </h2>
 
         <div class="flower-progress">
-
             <div id="flowerProgress"></div>
-
         </div>
 
         <div id="flowerPercent">
@@ -1685,14 +1528,11 @@ function startFlowerLoading() {
 
     `;
 
-
     container.appendChild(
         info
     );
 
-
     let progress = 0;
-
 
     const interval =
         setInterval(() => {
@@ -1700,37 +1540,21 @@ function startFlowerLoading() {
             progress +=
                 Math.random() * 4 + 2;
 
-
             if (progress >= 100) {
 
                 progress = 100;
 
-                clearInterval(
-                    interval
-                );
+                clearInterval(interval);
 
-
-                if (
+                if ($("flowerPercent")) {
                     $("flowerPercent")
-                ) {
-
-                    $("flowerPercent")
-                        .textContent =
-                        "100%";
-
+                        .textContent = "100%";
                 }
 
-
-                if (
+                if ($("flowerProgress")) {
                     $("flowerProgress")
-                ) {
-
-                    $("flowerProgress")
-                        .style.width =
-                        "100%";
-
+                        .style.width = "100%";
                 }
-
 
                 setTimeout(() => {
 
@@ -1738,25 +1562,17 @@ function startFlowerLoading() {
 
                 }, 700);
 
-
             } else {
 
-                if (
-                    $("flowerPercent")
-                ) {
+                if ($("flowerPercent")) {
 
                     $("flowerPercent")
                         .textContent =
-                        Math.floor(
-                            progress
-                        ) + "%";
+                        Math.floor(progress) + "%";
 
                 }
 
-
-                if (
-                    $("flowerProgress")
-                ) {
+                if ($("flowerProgress")) {
 
                     $("flowerProgress")
                         .style.width =
@@ -1773,18 +1589,22 @@ function startFlowerLoading() {
 
 /* =========================================================
    CATCH BOOK
-   3× RANDOM
 ========================================================= */
 
 let booksCaught = 0;
-
-let booksCreated = 0;
-
 let catchBookRunning = false;
+let catchGameStarted = false;
 
 
 /*
-    Instruction
+    IMPORTANT:
+
+    booksCreated tidak lagi dipakai
+    sebagai batas maksimal.
+
+    User harus menangkap 3 buku.
+    Kalau buku lewat, buku berikutnya
+    tetap akan muncul.
 */
 
 function createBookInstruction() {
@@ -1796,6 +1616,13 @@ function createBookInstruction() {
 
     if (!container) return;
 
+    if (
+        container.querySelector(
+            ".book-instruction"
+        )
+    ) {
+        return;
+    }
 
     const instruction =
         document.createElement(
@@ -1808,7 +1635,6 @@ function createBookInstruction() {
     instruction.textContent =
         "📖 Tangkap buku 3× untuk membuka halaman selanjutnya";
 
-
     container.appendChild(
         instruction
     );
@@ -1816,11 +1642,12 @@ function createBookInstruction() {
 }
 
 
-/*
-    Persiapan buku
-*/
-
 function prepareCatchBooks() {
+
+    if (catchGameStarted) return;
+
+    catchGameStarted = true;
+    booksCaught = 0;
 
     createBookInstruction();
 
@@ -1834,22 +1661,15 @@ function prepareCatchBooks() {
 
 
 /*
-    Buku datang random.
+    Spawn buku tanpa batas sampai
+    3 buku berhasil ditangkap.
 */
 
 function spawnCatchBook() {
 
-    if (
-        booksCreated >= 3
-    ) {
+    if (booksCaught >= 3) {
         return;
     }
-
-
-    booksCreated++;
-
-    catchBookRunning = true;
-
 
     const container =
         document.querySelector(
@@ -1858,6 +1678,7 @@ function spawnCatchBook() {
 
     if (!container) return;
 
+    catchBookRunning = true;
 
     const book =
         document.createElement(
@@ -1867,93 +1688,107 @@ function spawnCatchBook() {
     book.className =
         "catch-book";
 
-    book.type =
-        "button";
+    book.type = "button";
 
-
-    book.textContent =
-        "📖";
-
+    book.setAttribute(
+        "aria-label",
+        "Tangkap buku"
+    );
 
     /*
-        Posisi horizontal random.
+        Emoji + area tombol yang lebih besar.
     */
 
-    const randomLeft =
-        8 +
-        Math.random() * 84;
+    book.innerHTML = `
+        <span class="book-emoji">
+            📖
+        </span>
+    `;
 
+    const randomLeft =
+        10 +
+        Math.random() * 80;
 
     book.style.left =
         randomLeft + "%";
 
-
     book.style.setProperty(
         "--book-rotation",
         (
-            Math.random() * 40 -
-            20
+            Math.random() * 30 -
+            15
         ) + "deg"
     );
 
+    let caught = false;
+
+    function catchThisBook(event) {
+
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if (caught) return;
+
+        caught = true;
+
+        booksCaught++;
+
+        book.classList.add(
+            "book-caught"
+        );
+
+        vibrateDevice(70);
+
+        /*
+            Buku sudah ditangkap.
+        */
+
+        if (booksCaught >= 3) {
+
+            catchBookRunning = false;
+
+            setTimeout(() => {
+
+                openBookCover();
+
+            }, 700);
+
+            return;
+        }
+
+        /*
+            Buku berikutnya.
+        */
+
+        setTimeout(() => {
+
+            if (book.parentNode) {
+                book.remove();
+            }
+
+            spawnCatchBook();
+
+        }, 600);
+
+    }
+
 
     /*
-        Tangkap buku.
+        pointerup lebih reliable
+        untuk Android daripada click
+        pada elemen bergerak.
     */
 
     book.addEventListener(
+        "pointerdown",
+        catchThisBook
+    );
+
+    book.addEventListener(
         "click",
-        () => {
-
-            if (
-                book.classList.contains(
-                    "book-caught"
-                )
-            ) {
-                return;
-            }
-
-
-            booksCaught++;
-
-            book.classList.add(
-                "book-caught"
-            );
-
-
-            vibrateDevice(70);
-
-
-            /*
-                Buku berikutnya
-                muncul setelah 2 detik.
-            */
-
-            if (
-                booksCaught < 3
-            ) {
-
-                setTimeout(() => {
-
-                    spawnCatchBook();
-
-                }, 2000);
-
-            } else {
-
-                /*
-                    Semua tertangkap.
-                */
-
-                setTimeout(() => {
-
-                    openBookCover();
-
-                }, 800);
-
-            }
-
-        }
+        catchThisBook
     );
 
 
@@ -1963,37 +1798,28 @@ function spawnCatchBook() {
 
 
     /*
-        Kalau buku tidak ditangkap,
-        tetap hilang setelah lewat.
-        Tapi user harus menunggu
-        buku berikutnya.
+        Kalau kelewat, spawn lagi.
+        Tidak mengurangi booksCaught.
     */
 
     setTimeout(() => {
 
         if (
-            !book.classList.contains(
-                "book-caught"
-            )
+            !caught &&
+            book.parentNode
         ) {
 
             book.remove();
 
-            /*
-                Jangan menghilangkan
-                kesempatan tangkap.
-            */
-
             if (
-                booksCaught <
-                booksCreated
+                booksCaught < 3
             ) {
 
                 setTimeout(() => {
 
                     spawnCatchBook();
 
-                }, 1000);
+                }, 400);
 
             }
 
@@ -2014,12 +1840,10 @@ function openBookCover() {
         "page-cover"
     );
 
-
     const page =
         $("page-cover");
 
     if (!page) return;
-
 
     page.innerHTML = `
 
@@ -2055,7 +1879,8 @@ function openBookCover() {
 
                     <button
                         id="openBookBtn"
-                        class="book-next-button">
+                        class="book-next-button"
+                        type="button">
 
                         BUKA BUKU
 
@@ -2066,25 +1891,35 @@ function openBookCover() {
             </div>
 
             <div class="book-open-hint">
-
-                Klik bukunya untuk membuka
-
+                Klik tombol BUKA BUKU
             </div>
 
         </div>
 
     `;
 
-
     const openButton =
         $("openBookBtn");
-
 
     if (openButton) {
 
         openButton.addEventListener(
+            "pointerdown",
+            event => {
+                event.stopPropagation();
+            }
+        );
+
+        openButton.addEventListener(
             "click",
-            openBook
+            event => {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                openBook();
+
+            }
         );
 
     }
@@ -2092,11 +1927,20 @@ function openBookCover() {
 }
 
 
-/*
-    Buka buku
-*/
+/* =========================================================
+   OPEN BOOK
+========================================================= */
 
 function openBook() {
+
+    const button =
+        $("openBookBtn");
+
+    if (button) {
+
+        button.disabled = true;
+
+    }
 
     const book =
         $("book3d");
@@ -2107,21 +1951,7 @@ function openBook() {
             "book-opening"
         );
 
-
-        book.style.transform =
-            `
-            rotateX(8deg)
-            rotateY(-25deg)
-            scale(1.03)
-            `;
-
     }
-
-
-    /*
-        Kamera tidak pindah.
-        Hanya buku yang bergerak.
-    */
 
     setTimeout(() => {
 
@@ -2140,10 +1970,6 @@ function openBook() {
 
 function prepareGallery() {
 
-    /*
-        Bungkus foto dengan frame.
-    */
-
     document
         .querySelectorAll(
             ".photo-row img"
@@ -2159,7 +1985,6 @@ function prepareGallery() {
                 return;
             }
 
-
             const frame =
                 document.createElement(
                     "div"
@@ -2167,7 +1992,6 @@ function prepareGallery() {
 
             frame.className =
                 "photo-frame";
-
 
             img.parentNode.insertBefore(
                 frame,
@@ -2182,13 +2006,8 @@ function prepareGallery() {
 
 }
 
-
 prepareGallery();
 
-
-/*
-    Gallery → videos
-*/
 
 const nextVideoPage =
     $("nextVideoPage");
@@ -2231,7 +2050,6 @@ function prepareVideos() {
                 return;
             }
 
-
             const frame =
                 document.createElement(
                     "div"
@@ -2239,7 +2057,6 @@ function prepareVideos() {
 
             frame.className =
                 "memory-video-frame";
-
 
             video.parentNode.insertBefore(
                 frame,
@@ -2256,10 +2073,6 @@ function prepareVideos() {
 
 prepareVideos();
 
-
-/*
-    Videos → ending
-*/
 
 const toEnding =
     $("toEnding");
@@ -2283,7 +2096,7 @@ if (toEnding) {
 
 
 /* =========================================================
-   ENDING TEXT
+   ENDING
 ========================================================= */
 
 function startEndingText() {
@@ -2293,11 +2106,6 @@ function startEndingText() {
 
     if (!ending) return;
 
-
-    /*
-        Jangan isi ulang jika sudah ada.
-    */
-
     if (
         ending.dataset.loaded ===
         "true"
@@ -2305,10 +2113,8 @@ function startEndingText() {
         return;
     }
 
-
     ending.dataset.loaded =
         "true";
-
 
     const text = [
 
@@ -2327,7 +2133,6 @@ function startEndingText() {
         "❤️"
 
     ];
-
 
     text.forEach(line => {
 
@@ -2389,19 +2194,16 @@ setDiceValues(
     1
 );
 
+applyDiceRotation();
+
 
 /* =========================================================
    PREVENT CONTEXT MENU
-   (OPTIONAL)
 ========================================================= */
 
 document.addEventListener(
     "contextmenu",
     event => {
-
-        /*
-            Jangan ganggu video.
-        */
 
         if (
             event.target.tagName !==
